@@ -1,0 +1,47 @@
+/*!
+ * 清除样式
+ */
+
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, fieldset, legend, button, input, textarea, th, td {
+  margin: 0;
+  padding: 0;
+}
+body, button, input, select, textarea {
+  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+  font-size: 14px;
+}
+address, cite, dfn, em, i, var {
+  font-style: normal;
+}
+code, kbd, pre, samp, tt {
+  font-family: 'Courier New', Courier, monospace;
+}
+ul, ol {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+img {
+  border: none;
+}
+button, input, select, textarea {
+  outline: 0;
+}
+textarea {
+  resize: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
