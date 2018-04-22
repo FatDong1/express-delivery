@@ -7,10 +7,11 @@ import state from './store/state'
 import mutations from './store/mutations'
 import actions from './store/actions'
 
+import myDeliveryDataStore from '../components/manage/my-delivery/store/index'
+import deliveryHallDataStore from '../components/manage/delivery-hall/store/index'
+import creditDataStore from '../components/manage/credit/store/index'
+import userDataStore from '../components/manage/user/store/index'
 import workDataStore from '../components/manage/work/store/index'
-import scoreDataStore from '../components/manage/score/store/index'
-import companyDataStore from '../components/manage/company/store/index'
-import deivceDataStore from '../components/manage/device/store/index'
 
 Vue.use(Vuex)
 
@@ -21,8 +22,10 @@ store.mutations = mutations
 store.actions = actions
 store.modules = {}
 
+store.modules['my-delivery-data'] = myDeliveryDataStore
+store.modules['delivery-hall-data'] = deliveryHallDataStore
+store.modules['user-data'] = userDataStore
+store.modules['credit-data'] = creditDataStore
 store.modules['work-data'] = workDataStore
-store.modules['score-data'] = scoreDataStore
-store.modules['company-data'] = companyDataStore
-store.modules['device-data'] = deivceDataStore
+
 export default new Vuex.Store(store)

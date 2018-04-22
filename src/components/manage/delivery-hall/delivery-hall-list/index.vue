@@ -1,19 +1,9 @@
 <template>
   <view-container>
-    <view-header>快递管理</view-header>
+    <view-header>快递大厅</view-header>
     <view-content>
       <!--工单过滤-->
-      <span class="filter-label">筛选:</span> 
-      <el-select
-        class="business-select"
-        v-model="stage"
-        @change="changeStage">
-        <el-option
-          v-for="(item,index) in stageOptions"
-          :key="index"
-          :label="item.label"
-          :value="item.value"></el-option>
-      </el-select>  
+      <span class="filter-label">寄送时间:</span>  
        <el-date-picker
         class="business-date-picker"
         clearable
@@ -26,30 +16,33 @@
         end-placeholder="结束日期"
         :picker-options="workPickerData"
         @change="changeWorkUpdateTime">
-      </el-date-picker>  
+      </el-date-picker> 
+      <span style="margin: 0 10px 0 20px;">佣金范围(元):</span>
+      <el-input v-model="minPrice" style="width: 5%"></el-input>
+      <span style="margin: 0 10px">~</span>
+      <el-input v-model="maxPrice" style="width: 5%"></el-input>  
     </view-content>
     <!--列表  -->
     <view-content>
       <el-table
         stripe
         v-loading="loading"
-        :data="workListData">
+        :data="listData">
         <el-table-column type="index">
         </el-table-column>
         <el-table-column prop="number" label="快递编号"></el-table-column>
         <el-table-column prop="name" label="快递物品"></el-table-column>
         <el-table-column prop="address" label="寄送地址"></el-table-column>
         <el-table-column prop="getDate" label="寄送时间"></el-table-column>
-        <el-table-column prop="accepter" label="寄送人"></el-table-column>
         <el-table-column prop="price" label="佣金(元)"></el-table-column>
         <el-table-column prop="publisher" label="发布人"></el-table-column>
         <el-table-column prop="publishDate" label="发布时间"></el-table-column>  
-        <el-table-column prop="state" label="快递状态"></el-table-column>          
         <el-table-column
           label="操作"
           width="150">
           <template slot-scope="scope">
             <el-button @click="handleView(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="handleAccept(scope.row)" type="text" size="small">接受</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,17 +58,25 @@
         @current-change="changePageIndex">
       </el-pagination>
     </view-content-float> 
+    <confirm-dialog
+      :visible="showDialog"
+      @closeDialog="closeDialog"></confirm-dialog>
   </view-container>
 </template>
 
 <script>
 import { convertTimestamp } from 'shared@/utils/common.js'
 import { mapState, mapMutations, mapActions } from 'vuex'
+import ConfirmDialog from '../delivery-hall-dialog/index.vue'
 export default {
+  components: {
+    ConfirmDialog
+  },
   data () {
     return {
       pageTotal: null,
       loading: false,
+      showDialog: false,
       currentPage: 1,
       workUpdateTime: '',
       workPickerData: {
@@ -105,15 +106,9 @@ export default {
           }
         }]
       },
-      stage: '我发布的',
-      stageOptions: [{
-        label: '我发布的',
-        value: 'will'
-      }, {
-        label: '我接受的',
-        value: 'done'
-      }],
-      workListData: [{
+      minPrice: '',
+      maxPrice: '',
+      listData: [{
         number: '123124',
         name: '枕头',
         publisher: '小明',
@@ -123,7 +118,9 @@ export default {
         state: '未审核',
         publishDate: '2018-03-22',
         getDate: '2018-03-24',
-        remark: '这快递50斤吧，加油'
+        remark: '这快递50斤吧，加油',
+        email: '562097257@qq.com',
+        phone: '15602231822'                
       }, {
         number: '123124',
         name: '枕头',
@@ -134,7 +131,9 @@ export default {
         state: '未审核',
         publishDate: '2018-03-22',
         getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
+        remark: '一本书的大小，快递很轻的',
+        email: '562097257@qq.com',
+        phone: '15602231822'                      
       }, {
         number: '123124',
         name: '枕头',
@@ -145,7 +144,9 @@ export default {
         state: '未审核',
         publishDate: '2018-03-22',
         getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
+        remark: '一本书的大小，快递很轻的',
+        phone: '15602231822',        
+        email: '562097257@qq.com'        
       }, {
         number: '123124',
         name: '枕头',
@@ -156,23 +157,16 @@ export default {
         state: '未审核',
         publishDate: '2018-03-22',
         getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
+        remark: '一本书的大小，快递很轻的',
+        email: '562097257@qq.com',
+        phone: '15602231822'        
       }]
     }
   },
   methods: {
-    ...mapMutations('work-data', [
-      'updateWorkData'
+    ...mapMutations('delivery-hall-data', [
+      'updateDeliveryHallData'
     ]),
-    // 改变工单阶段
-    changeStage (state) {
-      let query = Object.assign({}, this.$route.query, {
-        state
-      })
-      this.$router.push({
-        query
-      })
-    },
     // 改变时间
     changeWorkUpdateTime (updateAt) {
       let beginDate, endDate
@@ -211,41 +205,22 @@ export default {
           page: page
         }
       }).then((result) => {
-        this.workListData = result.value      
+        this.listData = result.value      
         this.loading = false
       })
     },
     handleView (row) {
-      this.updateWorkData(row)
+      this.updateDeliveryHallData(row)
       this.$router.push({
-        name: 'work-view'
+        name: 'delivery-hall-view'
       })
     },
-    handleEdit (row) {
-      this.updateMyDeliveryData(row)      
-      this.$router.push({
-        name: 'my-delivery-edit',
-        query: {
-          from: 'list'
-        }
-      })
+    closeDialog () {
+      this.showDialog = false
     },
-    handleFail () {
-      this.$confirm('是否放弃拿取该快递?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });          
-      });
+    handleAccept (row) {
+      this.updateDeliveryHallData(row)
+      this.showDialog = true
     }
   },
   created () {

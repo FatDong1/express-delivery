@@ -1,6 +1,6 @@
 <template>
   <view-container>
-    <view-header>快递管理</view-header>
+    <view-header>我的快递</view-header>
     <view-content>
       <!--工单过滤-->
       <span class="filter-label">筛选:</span> 
@@ -50,6 +50,9 @@
           width="150">
           <template slot-scope="scope">
             <el-button @click="handleView(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button  v-if="stage === 'accept'" @click="handleFail(scope.row)" type="text" size="small">放弃</el-button>
+            <el-button v-if="stage === 'publish'" @click="handleDel(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -105,13 +108,13 @@ export default {
           }
         }]
       },
-      stage: '我发布的',
+      stage: 'publish',
       stageOptions: [{
         label: '我发布的',
-        value: 'will'
+        value: 'publish'
       }, {
         label: '我接受的',
-        value: 'done'
+        value: 'accept'
       }],
       workListData: [{
         number: '123124',
@@ -150,7 +153,7 @@ export default {
         number: '123124',
         name: '枕头',
         publisher: '小明',
-        accepter: '小红',
+        accepter: '',
         price: '1元',
         address: '仲恺菊苑B22-422',
         state: '未审核',
@@ -161,8 +164,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('work-data', [
-      'updateWorkData'
+    ...mapMutations('my-delivery-data', [
+      'updateMyDeliveryData'
     ]),
     // 改变工单阶段
     changeStage (state) {
@@ -216,9 +219,9 @@ export default {
       })
     },
     handleView (row) {
-      this.updateWorkData(row)
+      this.updateMyDeliveryData(row)
       this.$router.push({
-        name: 'work-view'
+        name: 'my-delivery-view'
       })
     },
     handleEdit (row) {
@@ -228,6 +231,23 @@ export default {
         query: {
           from: 'list'
         }
+      })
+    },
+    handleDel () {
+      this.$confirm('是否删除此快递信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     handleFail () {
@@ -244,8 +264,8 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
-      });
+        })
+      })
     }
   },
   created () {

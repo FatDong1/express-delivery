@@ -3,24 +3,30 @@ import Router from 'vue-router'
 import home from '../components/manage/home/home-page/index.vue'
 import manage from '../components/manage/index.vue'
 import login from '../components/login/index.vue'
-
+import signIn from '../components/sign-in/index.vue'
 import account from '../components/manage/account/index.vue'
+
+import myDeliveryIndex from '../components/manage/my-delivery/my-delivery-index/index.vue'
+import myDeliveryList from '../components/manage/my-delivery/my-delivery-list/index.vue'
+import myDeliveryView from '../components/manage/my-delivery/my-delivery-view/index.vue'
+import myDeliveryEdit from '../components/manage/my-delivery/my-delivery-edit/index.vue'
+
+import deliveryHallIndex from '../components/manage/delivery-hall/delivery-hall-index/index.vue'
+import deliveryHallList from '../components/manage/delivery-hall/delivery-hall-list/index.vue'
+import deliveryHallView from '../components/manage/delivery-hall/delivery-hall-view/index.vue'
 
 import workIndex from '../components/manage/work/work-index/index.vue'
 import workList from '../components/manage/work/work-list/index.vue'
-import workEdit from '../components/manage/work/work-edit/index.vue'
+import workView from '../components/manage/work/work-view/index.vue'
 
-import deviceIndex from '../components/manage/device/device-index/index.vue'
-import deviceList from '../components/manage/device/device-list/index.vue'
-import deviceCheck from '../components/manage/device/device-check/index.vue'
-import deviceAdd from '../components/manage/device/device-add/index.vue'
-import deviceDetail from '../components/manage/device/device-detail/index.vue'
+import userIndex from '../components/manage/user/user-index/index.vue'
+import userList from '../components/manage/user/user-list/index.vue'
+import userView from '../components/manage/user/user-view/index.vue'
 
-import scoreIndex from '../components/manage/score/index.vue'
-import scoreList from '../components/manage/score/score-list/index.vue'
-import scoreDetail from '../components/manage/score/score-detail/index.vue'
+import creditIndex from '../components/manage/credit/index.vue'
+import creditList from '../components/manage/credit/credit-list/index.vue'
+import creditDetail from '../components/manage/credit/credit-detail/index.vue'
 
-import companyIndex from '../components/manage/company/company-index/index.vue'
 
 Vue.use(Router)
 
@@ -38,7 +44,43 @@ const router = new Router({
           name: 'home',
           component: home
         },
-        // 日常点检
+        // 我的快递
+        {
+          path: '/my-delivery',
+          name: 'my-delivery',
+          component: myDeliveryIndex,
+          redirect: '/my-delivery/list',
+          children: [{
+            path: '/my-delivery/list',
+            name: 'my-delivery-list',
+            component: myDeliveryList
+          }, {
+            path: '/my-delivery/view',
+            name: 'my-delivery-view',
+            component: myDeliveryView
+          }, {
+            path: '/my-delivery/edit',
+            name: 'my-delivery-edit',
+            component: myDeliveryEdit
+          }]
+        },
+        // 快递大厅
+        {
+          path: '/delivery-hall',
+          name: 'delivery-hall',
+          component: deliveryHallIndex,
+          redirect: '/delivery-hall/list',
+          children: [{
+            path: '/delivery-hall/list',
+            name: 'delivery-hall-list',
+            component: deliveryHallList
+          }, {
+            path: '/delivery-hall/view',
+            name: 'delivery-hall-view',
+            component: deliveryHallView
+          }]
+        },
+        // 快递管理
         {
           path: '/work',
           name: 'work',
@@ -49,58 +91,44 @@ const router = new Router({
             name: 'work-list',
             component: workList
           }, {
-            path: '/work/detail/:state/:id',
-            name: 'work-detail',
-            component: workEdit
+            path: '/work/view',
+            name: 'work-view',
+            component: workView
           }]
         },
-        // 设备管理
+        // 用户管理
         {
-          path: '/device',
-          name: 'device',
-          component: deviceIndex,
-          redirect: '/device/list',
+          path: '/user',
+          name: 'user',
+          component: userIndex,
+          redirect: '/user/list',
           children: [{
-            path: '/device/list',
-            name: 'device-list',
-            component: deviceList,
+            path: '/user/list',
+            name: 'user-list',
+            component: userList
           }, {
-            path: '/device/check',
-            name: 'device-check',
-            component: deviceCheck
-          }, {
-            path: '/device/add',
-            name: 'device-add',
-            component: deviceAdd
-          }, {
-            path: '/device/detail',
-            name: 'device-detail',
-            component: deviceDetail
+            path: '/user/view',
+            name: 'user-view',
+            component: userView
           }]
         },
-        // 人员绩效
+        // 信誉排行
         {
-          path: '/score',
-          redirect: '/score/list',
-          component: scoreIndex,
+          path: '/credit',
+          redirect: '/credit/list',
+          component: creditIndex,
           children: [
             {
-              path: '/score/list',
-              name: 'score-list',
-              component: scoreList
+              path: '/credit/list',
+              name: 'credit-list',
+              component: creditList
             },
             {
-              path: '/score/detail',
-              name: 'score-detail',
-              component: scoreDetail
+              path: '/credit/detail',
+              name: 'credit-detail',
+              component: creditDetail
             }
           ]
-        },
-        // 组织架构管理
-        {
-          path: '/company',
-          name: 'company',
-          component: companyIndex
         },
 
         // 账户管理
@@ -115,6 +143,10 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: login
+    }, {
+      path: '/sign-in',
+      name: 'sign-in',
+      component: signIn
     }
   ]
 })
@@ -124,6 +156,8 @@ router.beforeEach((to, from, next) => {
   if (code && to.name === 'login') {
     next({name: 'home'})
   } else if (!code && to.name === 'login') {
+    next()
+  } else if (!code && to.name === "sign-in") {
     next()
   } else if (!code) {
     next({name: 'login'})

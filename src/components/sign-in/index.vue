@@ -1,15 +1,27 @@
 <template>
   <div class="login">
     <p class="login__title">快递帮拿服务平台</p>
-    <el-form ref="form" :model="form" label-width="70px">
+    <el-form ref="signDom" :model="form" :rules="rule" label-width="70px" status-icon>
       <el-form-item label="账号">
         <el-input v-model="form.account"></el-input>
       </el-form-item>
+      <el-form-item label="姓名">
+        <el-input v-model="form.name"></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="form.email"></el-input>
+      </el-form-item>
+      <el-form-item label="手机">
+        <el-input v-model="form.phone"></el-input>
+      </el-form-item>
       <el-form-item label="密码">
-        <el-input type="password" v-model="form.password"></el-input>
+        <el-input type="password" v-model="form.pass" ></el-input>
+      </el-form-item>
+      <el-form-item label="确认密码">
+        <el-input type="password" v-model="form.checkPassword"></el-input>
       </el-form-item>
       <el-form-item label="验证码">
-        <el-input type="check" v-model="form.check"></el-input>
+        <el-input v-model="form.check"></el-input>
       </el-form-item>
       <el-form-item>
         <row-layout :column="2">
@@ -17,13 +29,13 @@
           type="primary"
           slot="left"
           :disabled="form.disabled"
-          @click="signIn">注册</el-button>
+          @click="back">返回</el-button>
         <el-button
           type="primary"
           slot="right"
           class="sign-btn"
           :disabled="form.disabled"
-          @click="logIn">{{ buttonText }}</el-button>
+          @click="confirm">确定</el-button>
         </row-layout>
       </el-form-item>
     </el-form>
@@ -34,13 +46,43 @@
 import { mapMutations } from 'vuex'
 export default {
   data () {
+    let validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.form.checkPass !== '') {
+          this.$refs.signDom.validateField('checkPass')
+        }
+        callback()
+      }
+    }
+    let validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.form.pass) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
-      buttonText: '登录',
+      rule: {
+        pass: [
+          { validator: validatePass, trigger: 'blur' }
+        ],
+        checkPass: [
+          { validator: validatePass2, trigger: 'blur' }
+        ]
+      },
       form: {
         account: '',
-        password: '',
-        disabled: false,
-        check: ''
+        pass: '',
+        email: '',
+        phone: '',
+        checkPass: '',
+        check: '',
+        name: '',
+        disabled: false
       }
     }
   },
@@ -48,15 +90,15 @@ export default {
     ...mapMutations([
       'updateFlag'
     ]),
-    logIn () {
+    back () {
+      this.$router.push({name: 'login'})
+    },
+    confirm () {
       let obj = {
         name: "小明"
       }
       sessionStorage.setItem('user', JSON.stringify(obj))
-      this.$router.push({name: 'home'})
-    },
-    signIn () {
-      this.$router.push({name: 'sign-in'})
+      this.$router.push({name: 'home'})      
     }
     // signIn () {
     //   if (!this.form.account) {
@@ -106,7 +148,6 @@ export default {
 <style>
 .login {
   width: 300px;
-  margin: 140px auto;
   text-align: center;
 }
 

@@ -25,18 +25,22 @@
 // 面包屑配置对象
 const breadcrumbConfig = {}
 breadcrumbConfig['home'] = { to: '/home', title: '首页' }
-breadcrumbConfig['work'] = { to: '/work/list', title: '工单列表' }
-breadcrumbConfig['work-detail'] = { to: '/work/detail', title: '' }
+breadcrumbConfig['work-list'] = { to: '/work/list', title: '快递管理列表' }
+breadcrumbConfig['work-view'] = { to: '/work/view', title: '快递查看' }
 
-breadcrumbConfig['company'] = { to: '/company', title: '组织架构' }
+breadcrumbConfig['my-delivery-add'] = { to: '/my-delivery/edit', title: '发布快递' }
+breadcrumbConfig['my-delivery-edit'] = { to: '/my-delivery/edit', title: '快递编辑' }
+breadcrumbConfig['my-delivery-view'] = { to: '/my-delivery/view', title: '快递查看' }
+breadcrumbConfig['my-delivery-list'] = { to: '/my-delivery/list', title: '我的快递列表' }
 
-breadcrumbConfig['device'] = { to: '/device/list', title: '设备列表' }
-breadcrumbConfig['device-add'] = { to: '/device/add', title: '新增设备' }
-breadcrumbConfig['device-detail'] = { to: '/device/detail', title: '设备详情' }
-breadcrumbConfig['device-check'] = { to: '/device/check', title: '新增点检' }
+breadcrumbConfig['delivery-hall-list'] = { to: '/delivery-hal/list', title: '大厅快递列表' }
+breadcrumbConfig['delivery-hall-view'] = { to: '/delivery-hal/view', title: '快递查看' }
 
-breadcrumbConfig['score-list'] = { to: '/score', title: '绩效列表' }
-breadcrumbConfig['score-detail'] = { to: '/score/detail', title: '绩效详情' }
+breadcrumbConfig['user-list'] = { to: '/user/list', title: '用户列表' }
+breadcrumbConfig['user-view'] = { to: '/user/view', title: '用户查看' }
+
+breadcrumbConfig['credit-list'] = { to: '/credit/list', title: '信誉列表' }
+breadcrumbConfig['credit-detail'] = { to: '/credit/detail', title: '信誉详情' }
 
 breadcrumbConfig['account'] = { to: '/account', title: '账户管理' }
 
@@ -70,57 +74,62 @@ export default {
           this.changeBreadcrumbOptions('home')
           break
         case 'work-list':
-          this.searchShow = true
-          this.searchPlaceholder = '请输入设备名称'
-          this.changeBreadcrumbOptions('home', 'work')
-          break
-        case 'work-detail':
           this.searchShow = false
-          let state = this.$route.params.state
-          if (state === 'view') {
-            breadcrumbConfig['work-detail'].title = '工单查看'
+          this.changeBreadcrumbOptions('home', 'work-list')
+          break
+        case 'work-view':
+          this.searchShow = false
+          this.changeBreadcrumbOptions('home', 'work-list', 'work-view')
+          break
+        case 'my-delivery-list':
+          this.searchShow = true
+          this.searchPlaceholder = '请输入快递的物品名称'
+          this.changeBreadcrumbOptions('home', 'my-delivery-list')
+          break
+        case 'my-delivery-edit':
+          this.searchShow = false
+          if (this.$route.query.from === 'list') {
+            this.changeBreadcrumbOptions('home', 'my-delivery-list', 'my-delivery-edit')
           } else {
-            breadcrumbConfig['work-detail'].title = '工单录入'
+            this.changeBreadcrumbOptions('home', 'my-delivery-add')
           }
-          this.changeBreadcrumbOptions('home', 'work', 'work-detail')
           break
-        case 'device-list':
-          this.searchShow = true
-          this.searchPlaceholder = '请输入设备名称'
-          this.changeBreadcrumbOptions('home', 'device')
-          break
-        case 'device-add':
+        case 'my-delivery-view':
           this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'device', 'device-add')
+          this.changeBreadcrumbOptions('home', 'my-delivery-list', 'my-delivery-view')
           break
-        case 'device-detail':
+        case 'delivery-hall-list':
           this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'device', 'device-detail')
+          this.changeBreadcrumbOptions('home', 'delivery-hall-list')
           break
-        case 'device-check':
+        case 'delivery-hall-view':
           this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'device', 'device-check')
+          this.changeBreadcrumbOptions('home', 'delivery-hall-list', 'delivery-hall-view')
           break
-        case 'score-list':
+        case 'user-list':
           this.searchShow = true
           this.searchPlaceholder = '请输入人员名称'
-          this.changeBreadcrumbOptions('home', 'score-list')
+          this.changeBreadcrumbOptions('home', 'user-list')
           break
-        case 'score-detail':
+        case 'user-view':
           this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'score-list', 'score-detail')
+          this.changeBreadcrumbOptions('home', 'user-list', 'user-view')
           break
-        case 'company':
+        case 'credit-list':
           this.searchShow = true
           this.searchPlaceholder = '请输入人员名称'
-          this.changeBreadcrumbOptions('home', 'company')
+          this.changeBreadcrumbOptions('home', 'credit-list')
+          break
+        case 'credit-detail':
+          this.searchShow = false
+          this.changeBreadcrumbOptions('home', 'credit-list', 'credit-detail')
           break
         case 'account':
           this.searchShow = false
           this.changeBreadcrumbOptions('home', 'account')
           break
         default:
-          console.error('app-breadcrumb', 'route.name 不存在')
+          // console.error('app-breadcrumb', 'route.name 不存在')
           this.breadcrumbOptions = [{}]
       }
     }

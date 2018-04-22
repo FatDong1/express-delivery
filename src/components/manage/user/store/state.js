@@ -1,3 +1,3 @@
 export default {
-  workData: {}
+  userData: {}
 }

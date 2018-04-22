@@ -1,103 +1,82 @@
 <template>
   <view-container>
-    <view-header>修改密码</view-header>
-    <el-form class="account-form" :rules="rule" status-icon ref="accountForm" label-suffix="：" :model="accountForm" label-width="80px" center>
+    <view-header-flex>
+      <span>账户管理</span>
+      <div slot="right" style="display: inline-block">
+        <el-button size="small" class="btn-default" icon="el-icon-edit" @click="editInfo">修改信息</el-button>
+        <el-button size="small" class="btn-default" icon="el-icon-plus" @click="postMoney">余额充值</el-button>   
+      </div>
+    </view-header-flex>
+    <el-form class="account-form" label-suffix="：" :model="accountForm" label-width="100px" center>
       <el-form-item label="姓名" prop="name">
         <span>{{accountForm.name}}</span>
       </el-form-item>
       <el-form-item label="账户" prop="account">
         <span>{{accountForm.account}}</span>
       </el-form-item>
-      <el-form-item label="所属工厂" prop="factory">
-        <span>{{accountForm.factory}}</span>
+      <el-form-item label="性别" prop="sex">
+        <span>{{accountForm.sex}}</span>
       </el-form-item>
-      <el-form-item label="所属车间" prop="plant">
-        <span>{{accountForm.plant}}</span>
+      <el-form-item label="邮箱" prop="email">
+        <span>{{accountForm.email}}</span>
       </el-form-item>
-      <el-form-item label="新密码" prop="pass">
-        <el-input type="password" v-model="accountForm.pass"></el-input>
+      <el-form-item label="手机" prop="phone">
+        <span>{{accountForm.phone}}</span>
       </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
-        <el-input type="password" v-model="accountForm.checkPass"></el-input>
+      <el-form-item label="账户余额" prop="money">
+        <span>{{accountForm.money}}</span>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">修改</el-button>
-        <el-button>取消</el-button>
+      <el-form-item label="个性签名" prop="special">
+        <span>{{accountForm.special}}</span>
       </el-form-item>
     </el-form>
+    <info-dialog
+      :visible="infoVisible"
+      :infoData="accountForm"
+      @closeInfoDialog="closeInfoDialog"></info-dialog>
+    <money-dialog
+      :visible="moneyVisible"
+      @closeMoneyDialog="closeMoneyDialog"></money-dialog>
   </view-container>
 </template>
 
 <script>
+import InfoDialog from './info-dialog.vue'
+import MoneyDialog from './money-dialog.vue'
 export default {
+  components: {
+    InfoDialog,
+    MoneyDialog
+  },
   data () {
-    let validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'))
-      } else {
-        if (this.accountForm.checkPass !== '') {
-          this.$refs.accountForm.validateField('checkPass')
-        }
-        callback()
-      }
-    }
-    let validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'))
-      } else if (value !== this.accountForm.pass) {
-        callback(new Error('两次输入密码不一致!'))
-      } else {
-        callback()
-      }
-    }
-    let result = JSON.parse(sessionStorage.getItem('user'))  
     return {
+      moneyVisible: false,
+      infoVisible: false,
       accountForm: {
-        name: result.name,
+        name: '小明',
         pass: '',
-        factory: result.factory,
-        plant: result.plant,
+        sex: '男',
+        special: 'special',
+        email: '562097257@qq.com',
+        phone: 15602231822,
         checkPass: '',
-        account: result.account
+        account: 'xiaoming',
+        money: '100元'
       },
-      rule: {
-        pass: [
-          { validator: validatePass, trigger: 'blur' }
-        ],
-        checkPass: [
-          { validator: validatePass2, trigger: 'blur' }
-        ]
-      }
     }
   },
   methods: {
-    onSubmit () {
-      if (!this.accountForm.pass) {
-        this.$message({
-          type: 'error',
-          message: '请输入密码'
-        })
-      }
-      this.$http({
-        method: 'post',
-        url: '/api/user',
-        data: {
-          account: this.accountForm.account,
-          password: this.accountForm.pass
-        }
-      }).then((result) => {
-        this.$message({
-          type: 'success',
-          message: result.msg
-        })
-        this.accountForm.pass = ''
-        this.accountForm.checkPass = ''        
-      }).catch((error) => {
-        this.$message({
-          type: 'error',
-          message: result.msg
-        })
-      })
+    closeMoneyDialog () {
+      this.moneyVisible = false
+    },
+    closeInfoDialog () {
+      this.infoVisible = false
+    },
+    editInfo () {
+      this.infoVisible = true
+    },
+    postMoney () {
+      this.moneyVisible = true
     }
   }
 }

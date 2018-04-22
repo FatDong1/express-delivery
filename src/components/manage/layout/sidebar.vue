@@ -11,25 +11,33 @@
       <i class="el-icon-menu"></i>
       <span>首页</span>
     </el-menu-item>
-    <el-menu-item index="/work">
+    <el-menu-item index="/my-delivery">
       <i class="el-icon-tickets"></i>
-      <span>工单</span>
+      <span>我的快递</span>
     </el-menu-item>
-    <el-menu-item index="/device">
+    <el-menu-item index="/my-delivery/edit">
       <i class="el-icon-printer"></i>
-      <span>设备</span>
+      <span>快递帮拿</span>
     </el-menu-item>
-    <el-menu-item index="/score">
+    <el-menu-item index="/delivery-hall">
       <i class="el-icon-news"></i>
-      <span>绩效评分</span>
+      <span>快递大厅</span>
     </el-menu-item>
-    <el-menu-item index="/company">
+    <el-menu-item index="/credit">
       <i class="el-icon-setting"></i>
-      <span>组织架构</span>
+      <span>信誉排行</span>
     </el-menu-item>
     <el-menu-item index="/account">
       <i class="el-icon-location-outline"></i>
       <span>账户管理</span>
+    </el-menu-item>
+    <el-menu-item index="/work">
+      <i class="el-icon-location-outline"></i>
+      <span>快递管理</span>
+    </el-menu-item>
+    <el-menu-item index="/user">
+      <i class="el-icon-location-outline"></i>
+      <span>用户管理</span>
     </el-menu-item>
   </el-menu>
 </template>
