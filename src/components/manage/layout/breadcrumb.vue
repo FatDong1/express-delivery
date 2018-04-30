@@ -33,8 +33,8 @@ breadcrumbConfig['my-delivery-edit'] = { to: '/my-delivery/edit', title: '快递
 breadcrumbConfig['my-delivery-view'] = { to: '/my-delivery/view', title: '快递查看' }
 breadcrumbConfig['my-delivery-list'] = { to: '/my-delivery/list', title: '我的快递列表' }
 
-breadcrumbConfig['delivery-hall-list'] = { to: '/delivery-hal/list', title: '大厅快递列表' }
-breadcrumbConfig['delivery-hall-view'] = { to: '/delivery-hal/view', title: '快递查看' }
+breadcrumbConfig['delivery-hall-list'] = { to: '/delivery-hall/list', title: '大厅快递列表' }
+breadcrumbConfig['delivery-hall-view'] = { to: '/delivery-hall/view', title: '快递查看' }
 
 breadcrumbConfig['user-list'] = { to: '/user/list', title: '用户列表' }
 breadcrumbConfig['user-view'] = { to: '/user/view', title: '用户查看' }
@@ -99,7 +99,8 @@ export default {
           this.changeBreadcrumbOptions('home', 'my-delivery-list', 'my-delivery-view')
           break
         case 'delivery-hall-list':
-          this.searchShow = false
+         this.searchShow = true
+          this.searchPlaceholder = '请输入快递的物品名称'
           this.changeBreadcrumbOptions('home', 'delivery-hall-list')
           break
         case 'delivery-hall-view':

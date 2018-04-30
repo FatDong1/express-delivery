@@ -42,6 +42,7 @@ export default {
 
   &-label {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     padding: 10px 20px;
     background-color: #f2f2f2;
@@ -49,7 +50,6 @@ export default {
   }
 
   &-content {
-    flex: 1 1 auto;
     padding: 10px 20px 10px 10px;
   }
 }

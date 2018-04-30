@@ -5,22 +5,21 @@
       <!--工单过滤-->
       <span class="filter-label">寄送时间:</span>  
        <el-date-picker
-        class="business-date-picker"
         clearable
+        placeholder="选择寄送的日期"
+        value-format="yyyy-MM-dd"
         v-model="workUpdateTime"
-        type="daterange"
-        align="center"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="workPickerData"
-        @change="changeWorkUpdateTime">
-      </el-date-picker> 
+        @change="changeWorkUpdateTime"
+        type="date">
+      </el-date-picker>
       <span style="margin: 0 10px 0 20px;">佣金范围(元):</span>
-      <el-input v-model="minPrice" style="width: 5%"></el-input>
-      <span style="margin: 0 10px">~</span>
-      <el-input v-model="maxPrice" style="width: 5%"></el-input>  
+      <el-input size="small" v-model="minPrice" style="width: 5%"></el-input>
+      <span style="margin: 0 10px">--</span>
+      <el-input size="small" v-model="maxPrice" style="width: 5%"></el-input>  
+      <el-button 
+        size="small" 
+        class="btn-default" 
+        @click="search">搜索</el-button> 
     </view-content>
     <!--列表  -->
     <view-content>
@@ -30,13 +29,19 @@
         :data="listData">
         <el-table-column type="index">
         </el-table-column>
-        <el-table-column prop="number" label="快递编号"></el-table-column>
-        <el-table-column prop="name" label="快递物品"></el-table-column>
-        <el-table-column prop="address" label="寄送地址"></el-table-column>
-        <el-table-column prop="getDate" label="寄送时间"></el-table-column>
-        <el-table-column prop="price" label="佣金(元)"></el-table-column>
-        <el-table-column prop="publisher" label="发布人"></el-table-column>
-        <el-table-column prop="publishDate" label="发布时间"></el-table-column>  
+        <el-table-column prop="goods" label="快递物品"></el-table-column>
+        <el-table-column label="重量水平">
+          <template slot-scope="scope">
+            <span>{{ listData.weight_level === 0 ? '较轻' : listData.weight_level === 1 ? '较重' : '非常重' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="express_company" label="快递公司"></el-table-column>
+        <el-table-column prop="send_address" label="寄送地址"></el-table-column>
+        <el-table-column prop="get_address" label="取件地址"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+        <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
+        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="publisher" label="发布者"></el-table-column>  
         <el-table-column
           label="操作"
           width="150">
@@ -79,88 +84,9 @@ export default {
       showDialog: false,
       currentPage: 1,
       workUpdateTime: '',
-      workPickerData: {
-         shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
       minPrice: '',
       maxPrice: '',
-      listData: [{
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '这快递50斤吧，加油',
-        email: '562097257@qq.com',
-        phone: '15602231822'                
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的',
-        email: '562097257@qq.com',
-        phone: '15602231822'                      
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的',
-        phone: '15602231822',        
-        email: '562097257@qq.com'        
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的',
-        email: '562097257@qq.com',
-        phone: '15602231822'        
-      }]
+      listData: []
     }
   },
   methods: {
@@ -168,18 +94,9 @@ export default {
       'updateDeliveryHallData'
     ]),
     // 改变时间
-    changeWorkUpdateTime (updateAt) {
-      let beginDate, endDate
-      if (!updateAt) {
-        delete this.$route.query.beginDate
-        delete this.$route.query.endDate
-      } else {
-        beginDate = convertTimestamp(updateAt[0], 'yyyy-MM-dd')
-        endDate = convertTimestamp(updateAt[1], 'yyyy-MM-dd')
-      }
+    changeWorkUpdateTime (send_date) {
       let query = Object.assign({}, this.$route.query, {
-        beginDate,
-        endDate
+        send_date
       })
       this.$router.push({
         query
@@ -194,18 +111,53 @@ export default {
         query
       })
     },
-    fetchPageWork (page) {
-      let user = JSON.parse(sessionStorage.getItem('user'))
+    search () {
+      let obj = {
+        price_min: this.minPrice,
+        price_max: this.maxPrice
+      }
+      let query = Object.assign({}, this.$route.query, obj)
+      this.$router.push({
+        query
+      })
+    },
+    transformData (list) {
+      let arr = list.map(function (element) {
+        if (element.state === -1) {
+          element.stateStr = '未通过审核'
+        } else if (element.state === 0) {
+          element.stateStr = '审核中'
+        } else if (element.state === 1) {
+          element.stateStr = '审核通过'
+        } else if (element.state === 2) {
+          element.stateStr = '订单已被接受'
+        } else if (element.state === 3) {
+          element.stateStr = '寄送人确认完成'
+        } else if (element.state === 4) {
+          element.stateStr = '寄送人未按期完成'
+        } else if (element.state === 5) {
+          element.stateStr = '发布者确认完成'
+        } else if (element.state === 6) {
+          element.stateStr = '订单截至时间前未被接单'
+        }
+        return element
+      })
+      return arr
+    },
+    fetchPageWork (obj) {
+      // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/work',
+        url: '/api/express/list',
         params: {
-          checkerId: user.id,
-          page: page
+          goods: obj.goods,
+          send_date: obj.send_date,
+          price_min: obj.price_min,
+          price_max: obj.price_max
         }
       }).then((result) => {
-        this.listData = result.value      
+        this.listData = this.transformData(result)
         this.loading = false
       })
     },
@@ -223,8 +175,22 @@ export default {
       this.showDialog = true
     }
   },
+  watch: {
+    $route (current, old) {
+      let obj = {
+        page: current.query.pageIndex,
+        goods: current.query.searchFilter,
+        send_date: current.query.send_date,
+        price_min: current.query.price_min,
+        price_max: current.query.price_max
+      }
+      this.fetchPageWork(obj)      
+    }
+  },
   created () {
-    // this.fetchPageWork(1)
+    this.fetchPageWork({
+      page: 1,
+    })
   }
 }
 </script>
