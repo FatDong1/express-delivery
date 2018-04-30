@@ -15,17 +15,12 @@
           :value="item.value"></el-option>
       </el-select>  
        <el-date-picker
-        class="business-date-picker"
         clearable
+        placeholder="选择寄送的日期"
+        value-format="yyyy-MM-dd"
         v-model="workUpdateTime"
-        type="daterange"
-        align="center"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="workPickerData"
-        @change="changeWorkUpdateTime">
+        @change="changeWorkUpdateTime"
+        type="date">
       </el-date-picker>  
     </view-content>
     <!--列表  -->
@@ -33,26 +28,71 @@
       <el-table
         stripe
         v-loading="loading"
-        :data="workListData">
+        :data="listData">
         <el-table-column type="index">
         </el-table-column>
-        <el-table-column prop="number" label="快递编号"></el-table-column>
-        <el-table-column prop="name" label="快递物品"></el-table-column>
-        <el-table-column prop="address" label="寄送地址"></el-table-column>
-        <el-table-column prop="getDate" label="寄送时间"></el-table-column>
-        <el-table-column prop="accepter" label="寄送人"></el-table-column>
-        <el-table-column prop="price" label="佣金(元)"></el-table-column>
-        <el-table-column prop="publisher" label="发布人"></el-table-column>
-        <el-table-column prop="publishDate" label="发布时间"></el-table-column>  
-        <el-table-column prop="state" label="快递状态"></el-table-column>          
+        <el-table-column prop="goods" label="快递物品"></el-table-column>
+        <el-table-column prop="express_company" label="快递公司"></el-table-column>
+        <el-table-column prop="send_address" label="寄送地址"></el-table-column>
+        <el-table-column prop="get_address" label="取件地址"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+         <el-table-column label="寄送人" v-if="stage === 'publish'">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sender ? scope.row.sender : '暂无接单人'}}</span>
+          </template>
+        </el-table-column> 
+        <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
+        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="stateStr" label="快递状态"></el-table-column>          
         <el-table-column
           label="操作"
           width="150">
           <template slot-scope="scope">
             <el-button @click="handleView(scope.row)" type="text" size="small">查看</el-button>
-            <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
-            <el-button  v-if="stage === 'accept'" @click="handleFail(scope.row)" type="text" size="small">放弃</el-button>
-            <el-button v-if="stage === 'publish'" @click="handleDel(scope.row)" type="text" size="small">删除</el-button>
+            <el-button 
+              v-if="scope.row.state === -1"
+              @click="handleEdit(scope.row)" 
+              type="text" 
+              size="small">重新编辑</el-button>
+            <el-button 
+              v-if="stage === 'publish' && (scope.row.state === 4 || scope.row.state === 6)"
+              type="text" 
+              @click="addExpress(scope.row)"
+              size="small">重新发布</el-button>
+            <el-button 
+              v-if="stage === 'publish' && scope.row.state === 1"
+              type="text" 
+              @click="inviteExpress(scope.row)"
+              size="small">邀请</el-button>
+            <el-button 
+              v-if="stage === 'invite' && scope.row.state === 1"
+              type="text"
+              @click="acceptInvite(scope.row)" 
+              size="small">接受</el-button>
+            <el-button 
+              v-if="stage === 'invite' && scope.row.state === 1"
+              type="text" 
+              @click="handleInviteFail(scope.row)"
+              size="small">放弃邀请</el-button>
+              <!--寄送人确认  -->
+            <el-button 
+              v-if="stage === 'accept' && scope.row.state === 2"
+              type="text" 
+              @click="senderConfirm(scope.row)"
+              size="small">确认完成</el-button>
+              <!--发布者确认  -->
+            <el-button 
+              v-if="stage === 'publish' && scope.row.state === 3"
+              type="text" 
+              @click="publisherConfirm(scope.row)"
+              size="small">确认完成</el-button>
+            <el-button 
+              v-if="stage === 'publish' && scope.row.state === 5"
+              @click="assessExpress(scope.row)"
+              type="text" 
+              size="small">评价</el-button>
+            <el-button  v-if="stage === 'accept' && scope.row.state === 2" @click="handleFail(scope.row)" type="text" size="small">放弃</el-button>
+            <el-button v-if="stage === 'publish' && (scope.row.state === 0 || scope.row.state === 1)" @click="handleDel(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,46 +108,41 @@
         @current-change="changePageIndex">
       </el-pagination>
     </view-content-float> 
+    <assess-dialog :visible="showAssessDialog" @closeAssessDialog="closeAssessDialog"></assess-dialog>
+    <accept-dialog :visible="showAcceptDialog" @closeAcceptDialog="closeAcceptDialog"></accept-dialog>
+    <invite-dialog :visible="showInviteDialog" @closeInviteDialog="closeInviteDialog"></invite-dialog>
+    <sender-confirm :visible="showSenderDialog" @closeSenderDialog="closeSenderDialog"></sender-confirm>
+    <publisher-confirm :visible="showPublisherDialog" @closePublisherDialog="closePublisherDialog"></publisher-confirm>
   </view-container>
 </template>
 
 <script>
+import AssessDialog from './access-dialog.vue'
+import AcceptDialog from './accept-invite.vue'
+import InviteDialog from './invite-dialog.vue'
+import SenderConfirm from './sender-confirm.vue'
+import PublisherConfirm from './publisher-confirm.vue'
 import { convertTimestamp } from 'shared@/utils/common.js'
 import { mapState, mapMutations, mapActions } from 'vuex'
 export default {
+  components: {
+    AssessDialog,
+    SenderConfirm,
+    PublisherConfirm,
+    InviteDialog,
+    AcceptDialog
+  },
   data () {
     return {
+      showAssessDialog: false,
+      showSenderDialog: false,
+      showPublisherDialog: false,
+      showInviteDialog: false,
+      showAcceptDialog: false,
       pageTotal: null,
       loading: false,
       currentPage: 1,
       workUpdateTime: '',
-      workPickerData: {
-         shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
       stage: 'publish',
       stageOptions: [{
         label: '我发布的',
@@ -115,58 +150,75 @@ export default {
       }, {
         label: '我接受的',
         value: 'accept'
+      }, {
+        label: '受邀请的',
+        value: 'invite'
       }],
-      workListData: [{
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '这快递50斤吧，加油'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }]
+      listData: []
     }
   },
   methods: {
     ...mapMutations('my-delivery-data', [
       'updateMyDeliveryData'
     ]),
+    closeAcceptDialog () {
+      this.showAcceptDialog = false
+    },
+    acceptInvite (row) {
+      this.updateMyDeliveryData(row)
+      this.showAcceptDialog = true
+    },
+    closeAssessDialog () {
+      this.showAssessDialog = false
+    },
+    assessExpress (row) {
+      this.updateMyDeliveryData(row)
+      this.showAssessDialog = true
+    },
+    closeInviteDialog () {
+      this.showInviteDialog = false
+    },
+    inviteExpress (row) {
+      this.updateMyDeliveryData(row)
+      this.showInviteDialog = true
+    },
+    closeSenderDialog () {
+      this.showSenderDialog = false
+    },
+    senderConfirm (row) {
+      this.updateMyDeliveryData(row)
+      this.showSenderDialog = true
+    },
+    closePublisherDialog () {
+      this.showPublisherDialog = false
+    },
+    publisherConfirm (row) {
+      this.updateMyDeliveryData(row)
+      this.showPublisherDialog = true
+    },
+    transformData (list) {
+      let arr = list.map(function (element) {
+        if (element.state === -1) {
+          element.stateStr = '未通过审核'
+        } else if (element.state === 0) {
+          element.stateStr = '审核中'
+        } else if (element.state === 1) {
+          element.stateStr = '审核通过'
+        } else if (element.state === 2) {
+          element.stateStr = '订单已被接受'
+        } else if (element.state === 3) {
+          element.stateStr = '寄送人确认完成'
+        } else if (element.state === 4) {
+          element.stateStr = '寄送人未按期完成'
+        } else if (element.state === 5) {
+          element.stateStr = '发布者确认完成'
+        } else if (element.state === 6) {
+          element.stateStr = '订单截至时间前未被接单'
+        }
+        return element
+      })
+      return arr
+    },
     // 改变工单阶段
     changeStage (state) {
       let query = Object.assign({}, this.$route.query, {
@@ -177,18 +229,9 @@ export default {
       })
     },
     // 改变时间
-    changeWorkUpdateTime (updateAt) {
-      let beginDate, endDate
-      if (!updateAt) {
-        delete this.$route.query.beginDate
-        delete this.$route.query.endDate
-      } else {
-        beginDate = convertTimestamp(updateAt[0], 'yyyy-MM-dd')
-        endDate = convertTimestamp(updateAt[1], 'yyyy-MM-dd')
-      }
+    changeWorkUpdateTime (send_date) {
       let query = Object.assign({}, this.$route.query, {
-        beginDate,
-        endDate
+        send_date
       })
       this.$router.push({
         query
@@ -203,18 +246,21 @@ export default {
         query
       })
     },
-    fetchPageWork (page) {
-      let user = JSON.parse(sessionStorage.getItem('user'))
+    fetchPageWork (obj) {
+      // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/work',
+        url: '/api/express/list',
         params: {
-          checkerId: user.id,
-          page: page
+          state: obj.state,
+          goods: obj.goods,
+          send_date: obj.send_date
+          // checkerId: user.id,
+          // page: page
         }
       }).then((result) => {
-        this.workListData = result.value      
+        this.listData = this.transformData(result)
         this.loading = false
       })
     },
@@ -224,25 +270,44 @@ export default {
         name: 'my-delivery-view'
       })
     },
+    addExpress (row) {
+      this.updateMyDeliveryData(row)      
+      this.$router.push({
+        name: 'my-delivery-edit',
+        query: {
+          from: 'list',
+          state: 'add'
+        }
+      })
+    },
     handleEdit (row) {
       this.updateMyDeliveryData(row)      
       this.$router.push({
         name: 'my-delivery-edit',
         query: {
-          from: 'list'
+          from: 'list',
+          state: 'edit'
         }
       })
     },
-    handleDel () {
-      this.$confirm('是否删除此快递信息?', '提示', {
+    handleDel (row) {
+      this.$confirm('是否删除此快递订单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
+        this.$http({
+          method: 'post',
+          url: '/api/express/delete',
+          data: {
+            express_id: row.express_id
+          }
+        }).then((result) => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -250,26 +315,75 @@ export default {
         })
       })
     },
-    handleFail () {
-      this.$confirm('是否放弃拿取该快递?', '提示', {
+    handleInviteFail (row) {
+      this.$confirm('<p>是否放弃拿取该快递订单邀请?</p><p>tip：30分钟内需要确认是否接受</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
+        dangerouslyUseHTMLString: true,
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-      }).catch(() => {
+        this.$http({
+          method: 'post',
+          url: '/api/express/inviteFail',
+          data: {
+            express_id: row.express_id
+          }
+        }).then((result) => {
+          this.$message({
+            type: 'success',
+            message: '放弃订单邀请成功!'
+          })
+        })
+      }).catch((err) => {
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: '已取消'
+        })
+      })
+    },
+    handleFail (row) {
+      this.$confirm('<p>是否放弃拿取该快递?</p><p>tip：距接单时间5分钟内可以放弃订单</p>', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        dangerouslyUseHTMLString: true,
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          method: 'post',
+          url: '/api/express/fail',
+          data: {
+            express_id: row.express_id
+          }
+        }).then((result) => {
+          this.$message({
+            type: 'success',
+            message: '放弃订单成功!'
+          })
+        })
+      }).catch((err) => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
         })
       })
     }
   },
+  watch: {
+    $route (current, old) {
+      let obj = {
+        page: current.query.pageIndex,
+        goods: current.query.searchFilter,
+        send_date: current.query.send_date,
+        state: current.query.state
+      }
+      this.fetchPageWork(obj)      
+    }
+  },
   created () {
-    // this.fetchPageWork(1)
+    this.fetchPageWork({
+      page: 1,
+      state: 'publish'
+    })
   }
 }
 </script>

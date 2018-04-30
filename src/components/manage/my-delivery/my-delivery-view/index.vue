@@ -1,19 +1,56 @@
 <template>
   <view-container>
-    <view-header>快递查看</view-header>
+    <view-header-flex>
+      <span>快递查看</span>
+      <el-button 
+        slot="right"
+        size="small" 
+        class="btn-default" 
+        icon="el-icon-edit" 
+        v-if="myDeliveryData.state === -1 || myDeliveryData.state === 0 || myDeliveryData.state === 1"
+        @click="editExpress">编辑快递</el-button>
+    </view-header-flex>
     <info-detail>
       <row-layout :column="column">
         <info-detail-item
           slot="left"
           :label-width="labelWidth"
           label="快递编号">
-          {{ myDeliveryData.number }}
+          {{ myDeliveryData.express_number }}
         </info-detail-item>
         <info-detail-item
           slot="right"
           :label-width="labelWidth"
           label="快递物品">
-          {{ myDeliveryData.name }}
+          {{ myDeliveryData.goods }}
+        </info-detail-item>
+      </row-layout>
+      <row-layout :column="column">
+        <info-detail-item
+          slot="left"
+          :label-width="labelWidth"
+          label="重量水平">
+          {{ myDeliveryData.weight_level === 0 ? '较轻' : myDeliveryData.weight_level === 1 ? '较重' : '非常重'  }}
+        </info-detail-item>
+        <info-detail-item
+          slot="right"
+          :label-width="labelWidth"
+          label="佣金（元）">
+          {{ myDeliveryData.price }}
+        </info-detail-item>
+      </row-layout>
+      <row-layout :column="column">
+        <info-detail-item
+          slot="left"
+          :label-width="labelWidth"
+          label="快递公司">
+          {{ myDeliveryData.express_company }}
+        </info-detail-item>
+        <info-detail-item
+          slot="right"
+          :label-width="labelWidth"
+          label="取件地址">
+          {{ myDeliveryData.get_address }}
         </info-detail-item>
       </row-layout>
       <row-layout :column="column">
@@ -21,13 +58,13 @@
           slot="left"
           :label-width="labelWidth"
           label="寄送地址">
-          {{ myDeliveryData.address }}
+          {{ myDeliveryData.send_address }}
         </info-detail-item>
         <info-detail-item
           slot="right"
           :label-width="labelWidth"
           label="寄送时间">
-          {{ myDeliveryData.getDate }}
+          {{ myDeliveryData.send_date }}
         </info-detail-item>
       </row-layout>
       <row-layout :column="column">
@@ -35,7 +72,7 @@
           slot="left"
           :label-width="labelWidth"
           label="寄送人">
-          {{ myDeliveryData.accepter }}
+          {{ myDeliveryData.sender }}
         </info-detail-item>
         <info-detail-item
           slot="right"
@@ -49,20 +86,20 @@
           slot="left"
           :label-width="labelWidth"
           label="发布时间">
-          {{ myDeliveryData.publishDate }}
+          {{ myDeliveryData.publish_date }}
         </info-detail-item>
         <info-detail-item
           slot="right"
           :label-width="labelWidth"
           label="快递状态">
-          {{ myDeliveryData.state }}
+          {{ myDeliveryData.stateStr }}
         </info-detail-item>
       </row-layout>
       <row-layout :column="1">
         <info-detail-item 
           :label-width="labelWidth"
           label="备注">
-           {{ myDeliveryData.remark }}
+           {{ myDeliveryData.express_remark }}
         </info-detail-item>
       </row-layout>
     </info-detail>
@@ -80,8 +117,14 @@ export default {
     }
   },
   methods: {
-    saveWork () {
-      
+    editExpress () {
+      this.$router.push({
+        name: 'my-delivery-edit',
+        query: {
+          from: 'list',
+          state: 'edit'
+        }
+      })
     }
   },
   computed: {

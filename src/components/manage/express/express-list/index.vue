@@ -218,7 +218,7 @@ export default {
     handleView (row) {
       this.updateWorkData(row)
       this.$router.push({
-        name: 'work-view'
+        name: 'express-view'
       })
     },
     handleEdit (row) {

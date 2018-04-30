@@ -15,9 +15,9 @@ import deliveryHallIndex from '../components/manage/delivery-hall/delivery-hall-
 import deliveryHallList from '../components/manage/delivery-hall/delivery-hall-list/index.vue'
 import deliveryHallView from '../components/manage/delivery-hall/delivery-hall-view/index.vue'
 
-import workIndex from '../components/manage/work/work-index/index.vue'
-import workList from '../components/manage/work/work-list/index.vue'
-import workView from '../components/manage/work/work-view/index.vue'
+import expressIndex from '../components/manage/express/express-index/index.vue'
+import expressList from '../components/manage/express/express-list/index.vue'
+import expressView from '../components/manage/express/express-view/index.vue'
 
 import userIndex from '../components/manage/user/user-index/index.vue'
 import userList from '../components/manage/user/user-list/index.vue'
@@ -82,18 +82,18 @@ const router = new Router({
         },
         // 快递管理
         {
-          path: '/work',
-          name: 'work',
-          component: workIndex,
-          redirect: '/work/list',
+          path: '/express',
+          name: 'express',
+          component: expressIndex,
+          redirect: '/express/list',
           children: [{
-            path: '/work/list',
-            name: 'work-list',
-            component: workList
+            path: '/express/list',
+            name: 'express-list',
+            component: expressList
           }, {
-            path: '/work/view',
-            name: 'work-view',
-            component: workView
+            path: '/express/view',
+            name: 'express-view',
+            component: expressView
           }]
         },
         // 用户管理

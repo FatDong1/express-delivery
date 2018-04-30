@@ -11,7 +11,7 @@
       <i class="el-icon-menu"></i>
       <span>首页</span>
     </el-menu-item>
-    <el-menu-item index="/my-delivery">
+    <el-menu-item index="/my-delivery?state=publish">
       <i class="el-icon-tickets"></i>
       <span>我的快递</span>
     </el-menu-item>
@@ -28,15 +28,15 @@
       <span>信誉排行</span>
     </el-menu-item>
     <el-menu-item index="/account">
-      <i class="el-icon-location-outline"></i>
+      <i class="el-icon-sold-out"></i>
       <span>账户管理</span>
     </el-menu-item>
-    <el-menu-item index="/work">
-      <i class="el-icon-location-outline"></i>
+    <el-menu-item index="/express">
+      <i class="el-icon-date"></i>
       <span>快递管理</span>
     </el-menu-item>
     <el-menu-item index="/user">
-      <i class="el-icon-location-outline"></i>
+      <i class="el-icon-message"></i>
       <span>用户管理</span>
     </el-menu-item>
   </el-menu>

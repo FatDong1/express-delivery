@@ -11,7 +11,7 @@ import myDeliveryDataStore from '../components/manage/my-delivery/store/index'
 import deliveryHallDataStore from '../components/manage/delivery-hall/store/index'
 import creditDataStore from '../components/manage/credit/store/index'
 import userDataStore from '../components/manage/user/store/index'
-import workDataStore from '../components/manage/work/store/index'
+import expressDataStore from '../components/manage/express/store/index'
 
 Vue.use(Vuex)
 
@@ -26,6 +26,6 @@ store.modules['my-delivery-data'] = myDeliveryDataStore
 store.modules['delivery-hall-data'] = deliveryHallDataStore
 store.modules['user-data'] = userDataStore
 store.modules['credit-data'] = creditDataStore
-store.modules['work-data'] = workDataStore
+store.modules['express-data'] = expressDataStore
 
 export default new Vuex.Store(store)
