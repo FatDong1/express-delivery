@@ -171,8 +171,21 @@ export default {
       this.showDialog = false
     },
     handleAccept (row) {
-      this.updateDeliveryHallData(row)
-      this.showDialog = true
+      this.$alert('为保证快递安全，需缴纳200元保证金，才可以成为接单用户', '没有权限', {
+        confirmButtonText: '前往缴纳',
+        callback: action => {
+          if (action === 'confirm') {
+            this.$router.push({
+              name: 'account',
+              query: {
+                state: 'upgrade'
+              }
+            })
+          }
+        }
+      })
+      // this.updateDeliveryHallData(row)
+      // this.showDialog = true
     }
   },
   watch: {

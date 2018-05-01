@@ -24,6 +24,9 @@
       <el-form-item label="预定寄送时间">
        <span>{{ myDeliveryData.send_date }}</span>
       </el-form-item>
+      <el-form-item label="提示">
+       <span>{{ '确认完成后将自动从余额扣去佣金' + myDeliveryData.price + '元'}}</span>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>

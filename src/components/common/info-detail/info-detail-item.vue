@@ -1,6 +1,6 @@
 <template>
   <div class="info-detail-item">
-    <div class="info-detail-item-label" :style="labelStyle">
+    <div class="info-detail-item-label" :style="labelStyle" v-if="showLabel">
       <label>{{ label }}</label>
     </div>
     <div class="info-detail-item-content">
@@ -17,6 +17,10 @@ export default {
     },
     labelWidth: {
       type: String
+    },
+    showLabel: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {

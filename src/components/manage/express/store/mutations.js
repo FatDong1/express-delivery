@@ -1,6 +1,9 @@
 
 export default {
-  updateWorkData (state, payload) {
-    state.workData = payload
+  updateExpressData (state, payload) {
+    state.expressData = payload
+  },
+  updateStage (state, stage) {
+    state.stage = stage
   }
 }

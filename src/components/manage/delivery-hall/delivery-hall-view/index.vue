@@ -5,7 +5,8 @@
       <el-button 
         slot="right"
         size="small" 
-        class="btn-default" 
+        class="btn-default"
+        :disabled="disabled" 
         @click="acceptExpress">接受订单</el-button>
     </view-header-flex>
     <info-detail>
@@ -47,8 +48,8 @@
         <info-detail-item
           slot="right"
           :label-width="labelWidth"
-          label="取件地址">
-          {{ deliveryHallData.get_address }}
+          label="接单人">
+          暂无接单人
         </info-detail-item>
       </row-layout>
       <row-layout :column="column">
@@ -112,6 +113,7 @@ export default {
       column: 2,
       labelWidth: '120px',
       loading: false,
+      disabled: false
     }
   },
   methods: {
@@ -128,6 +130,7 @@ export default {
         }
       }).then((result) => {
         this.updateLoading(false)
+        this.disabled = true
         this.$message({
           type: 'success',
           message: '接受订单成功'

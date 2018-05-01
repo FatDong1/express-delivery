@@ -1,6 +1,6 @@
 <template>
   <el-dialog 
-    title="寄送人确认完成" 
+    title="举报用户未完成" 
     :visible="visible"
     @close="closeDialog">
     <el-form 
@@ -9,8 +9,8 @@
       label-suffix="："
       v-loading="loading"
       status-icon>
-      <el-form-item label="发布者">
-        <span>{{ myDeliveryData.publisher }}</span>
+      <el-form-item label="寄送人">
+        <span>{{ myDeliveryData.sender }}</span>
       </el-form-item>
       <el-form-item label="快递物品">
         <span>{{ myDeliveryData.goods }}</span>
@@ -25,12 +25,12 @@
        <span>{{ myDeliveryData.send_date }}</span>
       </el-form-item>
       <el-form-item label="提示">
-       <span>待发布者确认完成后将收到佣金</span>
+       <span>{{ '举报成功后将寄送人的信誉分减一'}}</span>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="closeDialog">取 消</el-button>
-      <el-button type="primary" @click="confirm">确认完成</el-button>
+      <el-button type="primary" @click="confirm">立即举报</el-button>
     </div>
   </el-dialog>
 </template>
@@ -55,22 +55,22 @@ export default {
   },
   methods: {
     closeDialog () {
-      this.$emit('closeSenderDialog')
+      this.$emit('closeExpiredDialog')
     },
     confirm () {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/finish',
+        url: '/api/express/fail',
         data: {
           express_id: this.myDeliveryData.express_id
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closeSenderDialog')
+        this.$emit('closeExpiredDialog')
         this.$message({
           type: 'success',
-          message: '确认成功'
+          message: '举报成功'
         })
       })
     }

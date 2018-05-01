@@ -1,3 +1,4 @@
 export default {
-  workData: {}
+  expressData: {},
+  stage: 0
 }

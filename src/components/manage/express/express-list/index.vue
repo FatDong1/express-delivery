@@ -14,18 +14,14 @@
           :label="item.label"
           :value="item.value"></el-option>
       </el-select>  
-       <el-date-picker
-        class="business-date-picker"
+      <el-date-picker
         clearable
+        placeholder="选择寄送的日期"
+        value-format="yyyy-MM-dd"
         v-model="workUpdateTime"
-        type="daterange"
-        align="center"
-        unlink-panels
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="workPickerData"
-        @change="changeWorkUpdateTime">
+        @change="changeWorkUpdateTime"
+        type="date">
+      </el-date-picker>
       </el-date-picker>  
     </view-content>
     <!--列表  -->
@@ -33,18 +29,22 @@
       <el-table
         stripe
         v-loading="loading"
-        :data="workListData">
+        :data="listData">
         <el-table-column type="index">
         </el-table-column>
-        <el-table-column prop="number" label="快递编号"></el-table-column>
-        <el-table-column prop="name" label="快递物品"></el-table-column>
-        <el-table-column prop="address" label="寄送地址"></el-table-column>
-        <el-table-column prop="getDate" label="寄送时间"></el-table-column>
-        <el-table-column prop="accepter" label="寄送人"></el-table-column>
-        <el-table-column prop="price" label="佣金(元)"></el-table-column>
-        <el-table-column prop="publisher" label="发布人"></el-table-column>
-        <el-table-column prop="publishDate" label="发布时间"></el-table-column>  
-        <el-table-column prop="state" label="快递状态"></el-table-column>          
+        <el-table-column prop="goods" label="快递物品"></el-table-column>
+        <el-table-column label="重量水平">
+          <template slot-scope="scope">
+            <span>{{ listData.weight_level === 0 ? '较轻' : listData.weight_level === 1 ? '较重' : '非常重' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="express_company" label="快递公司"></el-table-column>
+        <el-table-column prop="send_address" label="寄送地址"></el-table-column>
+        <el-table-column prop="get_address" label="取件地址"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+        <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
+        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="publisher" label="发布者"></el-table-column>           
         <el-table-column
           label="操作"
           width="150">
@@ -78,94 +78,25 @@ export default {
       loading: false,
       currentPage: 1,
       workUpdateTime: '',
-      workPickerData: {
-         shortcuts: [{
-          text: '最近一周',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近一个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: '最近三个月',
-          onClick (picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
-      stage: '我发布的',
+      stage: '',
       stageOptions: [{
-        label: '我发布的',
-        value: 'will'
+        label: '已通过',
+        value: -1
       }, {
-        label: '我接受的',
-        value: 'done'
+        label: '未审核',
+        value: 0
       }],
-      workListData: [{
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '这快递50斤吧，加油'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }, {
-        number: '123124',
-        name: '枕头',
-        publisher: '小明',
-        accepter: '小红',
-        price: '1元',
-        address: '仲恺菊苑B22-422',
-        state: '未审核',
-        publishDate: '2018-03-22',
-        getDate: '2018-03-24',
-        remark: '一本书的大小，快递很轻的'
-      }]
+      listData: []
     }
   },
   methods: {
-    ...mapMutations('work-data', [
-      'updateWorkData'
+    ...mapMutations('express-data', [
+      'updateExpressData',
+      'updateStage'
     ]),
     // 改变工单阶段
     changeStage (state) {
+      this.updateStage(state)
       let query = Object.assign({}, this.$route.query, {
         state
       })
@@ -174,18 +105,9 @@ export default {
       })
     },
     // 改变时间
-    changeWorkUpdateTime (updateAt) {
-      let beginDate, endDate
-      if (!updateAt) {
-        delete this.$route.query.beginDate
-        delete this.$route.query.endDate
-      } else {
-        beginDate = convertTimestamp(updateAt[0], 'yyyy-MM-dd')
-        endDate = convertTimestamp(updateAt[1], 'yyyy-MM-dd')
-      }
+    changeWorkUpdateTime (send_date) {
       let query = Object.assign({}, this.$route.query, {
-        beginDate,
-        endDate
+        send_date
       })
       this.$router.push({
         query
@@ -200,56 +122,46 @@ export default {
         query
       })
     },
-    fetchPageWork (page) {
-      let user = JSON.parse(sessionStorage.getItem('user'))
+    fetchPageWork (obj) {
+      // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/work',
+        url: '/api/express/list',
         params: {
-          checkerId: user.id,
-          page: page
+          // checkerId: user.id,
+          // page: page
+          goods: obj.goods,
+          send_date: obj.send_date,
+          price_min: obj.price_min,
+          price_max: obj.price_max
         }
       }).then((result) => {
-        this.workListData = result.value      
+        this.listData = result      
         this.loading = false
       })
     },
     handleView (row) {
-      this.updateWorkData(row)
+      this.updateExpressData(row)
       this.$router.push({
         name: 'express-view'
       })
     },
-    handleEdit (row) {
-      this.updateMyDeliveryData(row)      
-      this.$router.push({
-        name: 'my-delivery-edit',
-        query: {
-          from: 'list'
-        }
-      })
-    },
-    handleFail () {
-      this.$confirm('是否放弃拿取该快递?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });          
-      });
+  },
+  watch: {
+    $route (current, old) {
+      let obj = {
+        page: current.query.pageIndex,
+        goods: current.query.searchFilter,
+        send_date: current.query.send_date
+      }
+      this.fetchPageWork(obj)      
     }
   },
   created () {
-    // this.fetchPageWork(1)
+    this.fetchPageWork({
+      page: 1,
+    })
   }
 }
 </script>

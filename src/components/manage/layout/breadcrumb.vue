@@ -25,8 +25,8 @@
 // 面包屑配置对象
 const breadcrumbConfig = {}
 breadcrumbConfig['home'] = { to: '/home', title: '首页' }
-breadcrumbConfig['work-list'] = { to: '/work/list', title: '快递管理列表' }
-breadcrumbConfig['work-view'] = { to: '/work/view', title: '快递查看' }
+breadcrumbConfig['express-list'] = { to: '/express/list', title: '快递管理列表' }
+breadcrumbConfig['express-view'] = { to: '/express/view', title: '快递查看' }
 
 breadcrumbConfig['my-delivery-add'] = { to: '/my-delivery/edit', title: '发布快递' }
 breadcrumbConfig['my-delivery-edit'] = { to: '/my-delivery/edit', title: '快递编辑' }
@@ -68,18 +68,20 @@ export default {
       })
     },
     setBreadcrumb (to) {
+      this.searchFilter = ''
       switch (to.name) {
         case 'home':
           this.searchShow = false
           this.changeBreadcrumbOptions('home')
           break
-        case 'work-list':
-          this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'work-list')
+        case 'express-list':
+          this.searchShow = true
+          this.searchPlaceholder = '请输入快递的物品名称'
+          this.changeBreadcrumbOptions('home', 'express-list')
           break
-        case 'work-view':
+        case 'express-view':
           this.searchShow = false
-          this.changeBreadcrumbOptions('home', 'work-list', 'work-view')
+          this.changeBreadcrumbOptions('home', 'express-list', 'express-view')
           break
         case 'my-delivery-list':
           this.searchShow = true

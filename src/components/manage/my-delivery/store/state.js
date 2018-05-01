@@ -1,3 +1,4 @@
 export default {
-  myDeliveryData: {}
+  myDeliveryData: {},
+  stage: 'publish'
 }

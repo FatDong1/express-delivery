@@ -75,7 +75,7 @@ export default {
         this.$emit('closeAssessDialog')
         this.$message({
           type: 'success',
-          message: '评价成功'
+          message: '感谢您对本次服务进行评价'
         })
       })
     }

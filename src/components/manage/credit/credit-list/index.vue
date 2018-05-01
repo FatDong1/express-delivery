@@ -1,24 +1,56 @@
 <template>
   <view-container>
     <view-header>信誉排行</view-header>
+    <view-content>
+      <span class="filter-label">筛选:</span> 
+      <el-select
+        style="width: 20%"
+        v-model="sex"
+        placeholder="请选择用户性别"
+        @change="changeStage">
+        <el-option
+          v-for="(item,index) in sexOptions"
+          :key="index"
+          :label="item.label"
+          :value="item.value"></el-option>
+      </el-select> 
+      <span style="margin: 0 10px 0 20px;">信誉分范围:</span>
+      <el-input size="small" v-model="minPoint" style="width: 5%"></el-input>
+      <span style="margin: 0 10px">--</span>
+      <el-input size="small" v-model="maxPoint" style="width: 5%"></el-input>  
+      <el-button 
+        size="small" 
+        class="btn-default" 
+        @click="search">搜索</el-button> 
+    </view-content>
     <!--列表  -->
     <view-content>
       <el-table
         stripe
+        v-loading="loading"
         :data="listData">
-        <el-table-column prop="rank" label="名次" width="50px"></el-table-column>
+        <el-table-column type="index" label="名次" width="50px"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="sex" label="性别"></el-table-column>
+        <el-table-column prop="sex" label="性别">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sex === 1 ? '男' : '女' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="email" label="电子邮箱" width="150px"></el-table-column>
         <el-table-column prop="phone" label="联系电话"></el-table-column>
-        <el-table-column prop="order" label="成单次数"></el-table-column>
-        <el-table-column prop="rate" label="成单率"></el-table-column>
-        <el-table-column prop="point" label="信誉分数"></el-table-column>
+        <el-table-column prop="order_times" label="接单次数"></el-table-column>
+        <el-table-column prop="finish_times" label="成单次数"></el-table-column>
+        <el-table-column label="成单率">
+          <template slot-scope="scope">
+            <span>{{ ((scope.row.order_times / scope.row.finish_times).toFixed(2) - 0) * 100 + '%' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="credit" label="信誉分数"></el-table-column>
         <el-table-column
           label="操作"
           width="100">
           <template slot-scope="scope">
-            <el-button @click="handleView(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="handleView(scope.row, scope.$index)" type="text" size="small">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,48 +78,42 @@ export default {
     return {
       pageTotal: null,
       currentPage: 1,
-      listData: [
-        {
-          rank: 1,
-          name: '小明',
-          email: '562097257@qq.com',
-          phone: '1562023182',
-          point: '10',
-          order: 12,
-          rate: '90%',
-          sex: '男',
-          special: '哈哈哈哈哈哈'                
-        },
-        {
-          rank: 2,
-          name: '小明',
-          email: '562097257@qq.com',
-          phone: '1562023182',
-          point: '10',
-          order: 12,
-          rate: '90%',
-          sex: '女',
-          special: '哈哈哈哈哈哈'      
-             
-        },        
-        {
-          rank: 3,
-          name: '小明',
-          email: '562097257@qq.com',
-          phone: '1562023182',
-          point: '10',
-          order: 12,
-          rate: '90%',
-          sex: '女',
-          special: '哈哈哈哈哈哈'      
-        }
-      ]
+      sex: '',
+      minPoint: '',
+      maxPoint: '',
+      loading: false,
+      sexOptions: [{
+        value: 1,
+        label: '男'
+      }, {
+        value: 2,
+        label: '女'
+      }],
+      listData: []
     }
   },
   methods: {
     ...mapMutations('credit-data', [
       'updateCreditData'
     ]),
+    changeStage (sex) {
+      let query = Object.assign({}, this.$route.query, {
+        sex
+      })
+      this.$router.push({
+        query
+      })
+    },
+    search () {
+      let obj = {
+        point_min: this.minPoint,
+        point_max: this.maxPoint
+      }
+      let query = Object.assign({}, this.$route.query, obj)
+      this.$router.push({
+        query
+      })
+    },
     // 当页数改变执行的函数
     changePageIndex (pageIndex) {
       let query = Object.assign({}, this.$route.query, {
@@ -97,12 +123,50 @@ export default {
         query
       })
     },
-    handleView (row) {
-      this.updateCreditData(row)
+    fetchPageUser (obj) {
+      // let user = JSON.parse(sessionStorage.getItem('user'))
+      this.loading = true
+      this.$http({
+        method: 'get',
+        url: '/api/user/list',
+        params: {
+          name: obj.name,
+          sex: obj.sex,
+          // page: obj.page,
+          point_min: obj.point_min,
+          point_max: obj.point_max
+        }
+      }).then((result) => {
+        this.listData = result
+        this.loading = false
+      })
+    },
+    handleView (row, index) {
+      let obj = Object.assign(row, {
+        rank: index + 1
+      })
+      this.updateCreditData(obj)
       this.$router.push({
         name: 'credit-detail'
       })
     }
+  },
+  watch: {
+    $route (current, old) {
+      let obj = {
+        page: current.query.pageIndex,
+        name: current.query.searchFilter,
+        sex: current.query.sex,
+        point_min: current.query.point_min,
+        point_max: current.query.point_max
+      }
+      this.fetchPageUser(obj)      
+    }
+  },
+  created () {
+    this.fetchPageUser({
+      page: 1
+    })
   }
 }
 </script>

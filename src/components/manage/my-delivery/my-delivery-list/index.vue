@@ -68,7 +68,7 @@
               v-if="stage === 'invite' && scope.row.state === 1"
               type="text"
               @click="acceptInvite(scope.row)" 
-              size="small">接受</el-button>
+              size="small">接受邀请</el-button>
             <el-button 
               v-if="stage === 'invite' && scope.row.state === 1"
               type="text" 
@@ -91,8 +91,21 @@
               @click="assessExpress(scope.row)"
               type="text" 
               size="small">评价</el-button>
-            <el-button  v-if="stage === 'accept' && scope.row.state === 2" @click="handleFail(scope.row)" type="text" size="small">放弃</el-button>
-            <el-button v-if="stage === 'publish' && (scope.row.state === 0 || scope.row.state === 1)" @click="handleDel(scope.row)" type="text" size="small">删除</el-button>
+            <el-button  
+              v-if="stage === 'accept' && scope.row.state === 2" 
+              @click="handleFail(scope.row)" 
+              type="text" 
+              size="small">放弃</el-button>
+            <el-button  
+              v-if="stage === 'publish' && (scope.row.state === 2 || scope.row.state === 3)" 
+              @click="handleExpired(scope.row)" 
+              type="text" 
+              size="small">举报</el-button>
+            <el-button 
+              v-if="stage === 'publish' && (scope.row.state === -1 || scope.row.state === 0 || scope.row.state === 1)" 
+              @click="handleDel(scope.row)" 
+              type="text" 
+              size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -109,6 +122,7 @@
       </el-pagination>
     </view-content-float> 
     <assess-dialog :visible="showAssessDialog" @closeAssessDialog="closeAssessDialog"></assess-dialog>
+    <expired-dialog :visible="showExpiredDialog" @closeExpiredDialog="closeExpiredDialog"></expired-dialog>
     <accept-dialog :visible="showAcceptDialog" @closeAcceptDialog="closeAcceptDialog"></accept-dialog>
     <invite-dialog :visible="showInviteDialog" @closeInviteDialog="closeInviteDialog"></invite-dialog>
     <sender-confirm :visible="showSenderDialog" @closeSenderDialog="closeSenderDialog"></sender-confirm>
@@ -119,6 +133,7 @@
 <script>
 import AssessDialog from './access-dialog.vue'
 import AcceptDialog from './accept-invite.vue'
+import ExpiredDialog from './expired-dialog.vue'
 import InviteDialog from './invite-dialog.vue'
 import SenderConfirm from './sender-confirm.vue'
 import PublisherConfirm from './publisher-confirm.vue'
@@ -130,7 +145,8 @@ export default {
     SenderConfirm,
     PublisherConfirm,
     InviteDialog,
-    AcceptDialog
+    AcceptDialog,
+    ExpiredDialog
   },
   data () {
     return {
@@ -139,6 +155,7 @@ export default {
       showPublisherDialog: false,
       showInviteDialog: false,
       showAcceptDialog: false,
+      showExpiredDialog: false,
       pageTotal: null,
       loading: false,
       currentPage: 1,
@@ -159,8 +176,16 @@ export default {
   },
   methods: {
     ...mapMutations('my-delivery-data', [
-      'updateMyDeliveryData'
+      'updateMyDeliveryData',
+      'updateStage'
     ]),
+    closeExpiredDialog () {
+      this.showExpiredDialog = false
+    },
+    handleExpired (row) {
+      this.updateMyDeliveryData(row)
+      this.showExpiredDialog = true
+    },
     closeAcceptDialog () {
       this.showAcceptDialog = false
     },
@@ -205,13 +230,13 @@ export default {
         } else if (element.state === 1) {
           element.stateStr = '审核通过'
         } else if (element.state === 2) {
-          element.stateStr = '订单已被接受'
+          element.stateStr = '订单待完成'
         } else if (element.state === 3) {
-          element.stateStr = '寄送人确认完成'
+          element.stateStr = '待发布者确认'
         } else if (element.state === 4) {
           element.stateStr = '寄送人未按期完成'
         } else if (element.state === 5) {
-          element.stateStr = '发布者确认完成'
+          element.stateStr = '待评价'
         } else if (element.state === 6) {
           element.stateStr = '订单截至时间前未被接单'
         }
@@ -221,6 +246,7 @@ export default {
     },
     // 改变工单阶段
     changeStage (state) {
+      this.updateStage(state)
       let query = Object.assign({}, this.$route.query, {
         state
       })
@@ -350,7 +376,7 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/fail',
+          url: '/api/express/abandon',
           data: {
             express_id: row.express_id
           }
