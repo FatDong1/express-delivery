@@ -342,7 +342,7 @@ export default {
       })
     },
     handleInviteFail (row) {
-      this.$confirm('<p>是否放弃拿取该快递订单邀请?</p><p>tip：30分钟内需要确认是否接受</p>', '提示', {
+      this.$confirm('<p>是否放弃该快递订单邀请?</p><p>tip：30分钟内未确认则默认放弃</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         dangerouslyUseHTMLString: true,

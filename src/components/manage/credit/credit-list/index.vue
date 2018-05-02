@@ -4,7 +4,8 @@
     <view-content>
       <span class="filter-label">筛选:</span> 
       <el-select
-        style="width: 20%"
+        style="width: 15%"
+        size="small"
         v-model="sex"
         placeholder="请选择用户性别"
         @change="changeStage">

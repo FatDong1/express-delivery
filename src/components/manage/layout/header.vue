@@ -6,10 +6,8 @@
     active-text-color="#409eff"
     text-color="#ffffff">
     <div class="header-logo">
-    LOGO
+    <img src="/static/logo.png" width="150px" height="50px"/>
     </div>
-    <!-- <el-menu-item index="1">i商机</el-menu-item>
-    <el-menu-item index="2">CTC</el-menu-item> -->
     <el-dropdown class="header-user-area" trigger="click">
       <div class="header-user">
         <span class="user-name">{{ name }}</span>

@@ -3,7 +3,7 @@
     <view-header>快递大厅</view-header>
     <view-content>
       <!--工单过滤-->
-      <span class="filter-label">寄送时间:</span>  
+      <span class="filter-label">筛选:</span>  
        <el-date-picker
         clearable
         placeholder="选择寄送的日期"
@@ -12,6 +12,17 @@
         @change="changeWorkUpdateTime"
         type="date">
       </el-date-picker>
+      <el-select
+        style="width: 15%"
+        v-model="weight_level"
+        placeholder="选择重量水平"
+        @change="changeWeight">
+        <el-option
+          v-for="(item,index) in weightOptions"
+          :key="index"
+          :label="item.label"
+          :value="item.value"></el-option>
+      </el-select> 
       <span style="margin: 0 10px 0 20px;">佣金范围(元):</span>
       <el-input size="small" v-model="minPrice" style="width: 5%"></el-input>
       <span style="margin: 0 10px">--</span>
@@ -32,7 +43,7 @@
         <el-table-column prop="goods" label="快递物品"></el-table-column>
         <el-table-column label="重量水平">
           <template slot-scope="scope">
-            <span>{{ listData.weight_level === 0 ? '较轻' : listData.weight_level === 1 ? '较重' : '非常重' }}</span>
+            <span>{{ scope.row.weight_level === 0 ? '较轻' : scope.row.weight_level === 1 ? '较重' : '非常重' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="express_company" label="快递公司"></el-table-column>
@@ -86,7 +97,20 @@ export default {
       workUpdateTime: '',
       minPrice: '',
       maxPrice: '',
-      listData: []
+      weight_level: '',
+      listData: [],
+      weightOptions: [
+        {
+          value: 0,
+          label: '较轻'
+        }, {
+          value: 1,
+          label: '较重'
+        }, {
+          value: 2,
+          label: '非常重'
+        }
+      ]
     }
   },
   methods: {
@@ -97,6 +121,14 @@ export default {
     changeWorkUpdateTime (send_date) {
       let query = Object.assign({}, this.$route.query, {
         send_date
+      })
+      this.$router.push({
+        query
+      })
+    },
+    changeWeight (weight_level) {
+      let query = Object.assign({}, this.$route.query, {
+        weight_level
       })
       this.$router.push({
         query
@@ -154,7 +186,8 @@ export default {
           goods: obj.goods,
           send_date: obj.send_date,
           price_min: obj.price_min,
-          price_max: obj.price_max
+          price_max: obj.price_max,
+          weight_level: obj.weight_level
         }
       }).then((result) => {
         this.listData = this.transformData(result)
@@ -195,7 +228,8 @@ export default {
         goods: current.query.searchFilter,
         send_date: current.query.send_date,
         price_min: current.query.price_min,
-        price_max: current.query.price_max
+        price_max: current.query.price_max,
+        weight_level: current.query.weight_level
       }
       this.fetchPageWork(obj)      
     }
