@@ -169,7 +169,8 @@ export default {
         method: 'post',
         url: '/api/express/reject',
         data: {
-          express_id: this.expressData.express_id
+          express_id: this.expressData.express_id,
+          reject_reason: this.form.reason
         }
       }).then(() => {
         this.loading = false

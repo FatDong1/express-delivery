@@ -127,7 +127,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/express/expressmaglist',
+        url: '/api/express/expressmaglist.do',
         params: {
           page: obj.page,
           goods: obj.goods,
