@@ -129,7 +129,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/add',
+        url: '/api/express/add.do',
         data: this.deliveryData
       }).then((result) => {
         this.loading = false
@@ -146,7 +146,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/update',
+        url: '/api/express/update.do',
         data: this.deliveryData
       }).then((result) => {
         this.loading = false

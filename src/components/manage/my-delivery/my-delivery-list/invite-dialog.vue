@@ -28,8 +28,8 @@
        <el-input v-model="inviter" placeholder="请输入您想邀请的人"></el-input>
       </el-form-item>
       <el-form-item label="是否指定">
-        <el-radio v-model="radio" label="1">是</el-radio>
-        <el-radio v-model="radio" label="0">否</el-radio>
+        <el-radio v-model="radio" :label="1">是</el-radio>
+        <el-radio v-model="radio" :label="0">否</el-radio>
         <p v-if="radio === '1'" style="font-size: 14px">（在30分钟内只能由被邀请的人接受订单）</p>        
       </el-form-item>
     </el-form>
@@ -51,7 +51,7 @@ export default {
   data () {
     return {
       inviter: '',
-      radio: '0',
+      radio: 0,
       loading: false,
     }
   },
@@ -65,13 +65,38 @@ export default {
       this.$emit('closeInviteDialog')
     },
     confirm () {
+      if (this.radio) {
+        this.assign()
+      } else {
+        this.invite()
+      }
+    },
+    invite () {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/invite',
+        url: '/api/express/invite.do',
         data: {
           express_id: this.myDeliveryData.express_id,
           inviter: this.inviter
+        }
+      }).then((result) => {
+        this.loading = false
+        this.$emit('closeInviteDialog')
+        this.$message({
+          type: 'success',
+          message: '邀请成功'
+        })
+      })
+    },
+    assign () {
+      this.loading = true
+      this.$http({
+        method: 'post',
+        url: '/api/express/invite.do',
+        data: {
+          express_id: this.myDeliveryData.express_id,
+          name: this.inviter
         }
       }).then((result) => {
         this.loading = false

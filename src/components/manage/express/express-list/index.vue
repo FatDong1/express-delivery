@@ -81,7 +81,7 @@ export default {
       stage: '',
       stageOptions: [{
         label: '已通过',
-        value: -1
+        value: 1
       }, {
         label: '未审核',
         value: 0
@@ -98,7 +98,7 @@ export default {
     changeStage (state) {
       this.updateStage(state)
       let query = Object.assign({}, this.$route.query, {
-        state
+        has_check: state
       })
       this.$router.push({
         query
@@ -127,14 +127,12 @@ export default {
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/express/list',
+        url: '/api/express/expressmaglist',
         params: {
-          // checkerId: user.id,
-          // page: page
+          page: obj.page,
           goods: obj.goods,
           send_date: obj.send_date,
-          price_min: obj.price_min,
-          price_max: obj.price_max
+          has_check: obj.has_check
         }
       }).then((result) => {
         this.listData = result      
@@ -153,7 +151,8 @@ export default {
       let obj = {
         page: current.query.pageIndex,
         goods: current.query.searchFilter,
-        send_date: current.query.send_date
+        send_date: current.query.send_date,
+        has_check: current.query.has_check
       }
       this.fetchPageWork(obj)      
     }

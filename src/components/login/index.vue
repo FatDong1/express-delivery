@@ -1,16 +1,16 @@
 <template>
   <div class="login">
     <p class="login__title">快递帮拿服务平台</p>
-    <el-form ref="form" :model="form" label-width="70px">
-      <el-form-item label="账号">
+    <el-form ref="form" :model="form" label-width="70px" v-loading="loading">
+      <el-form-item label="账号" prop="account">
         <el-input v-model="form.account"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码" prop="password">
         <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
-      <el-form-item label="验证码">
+      <!-- <el-form-item label="验证码">
         <el-input type="check" v-model="form.check"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <row-layout :column="2">
         <el-button
@@ -23,7 +23,7 @@
           slot="right"
           class="sign-btn"
           :disabled="form.disabled"
-          @click="logIn">{{ buttonText }}</el-button>
+          @click="logIn">登录</el-button>
         </row-layout>
       </el-form-item>
     </el-form>
@@ -35,12 +35,10 @@ import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      buttonText: '登录',
+      loading: false,
       form: {
         account: '',
-        password: '',
-        disabled: false,
-        check: ''
+        password: ''
       }
     }
   },
@@ -49,56 +47,41 @@ export default {
       'updateFlag'
     ]),
     logIn () {
-      let obj = {
-        name: "小明"
-      }
-      sessionStorage.setItem('user', JSON.stringify(obj))
-      this.$router.push({name: 'home'})
+        let obj = {
+          name: "管理员"
+        }
+        sessionStorage.setItem('user', JSON.stringify(obj))
+        this.$router.push({name: 'home'})
+      // if (!this.form.account) {
+      //   this.$message({
+      //     type: 'warning',
+      //     message: '账号不能为空!'
+      //   })
+      //   return
+      // } else if (!this.form.password) {
+      //   this.$message({
+      //     type: 'warning',
+      //     message: '密码不能为空!'
+      //   })
+      //   return
+      // }
+      // this.loading = true
+      // this.$http({
+      //   method: 'post',
+      //   data: this.form,
+      //   url: '/api/user/login.do'
+      // }).then((result) => {
+      //   this.loading = false
+      //   let obj = {
+      //     name: "小明"
+      //   }
+      //   sessionStorage.setItem('user', JSON.stringify(obj))
+      //   this.$router.push({name: 'home'})
+      // })
     },
     signIn () {
       this.$router.push({name: 'sign-in'})
     }
-    // signIn () {
-    //   if (!this.form.account) {
-    //     this.$message({
-    //       type: 'warning',
-    //       message: '账号不能为空!'
-    //     })
-    //   } else if (!this.form.password) {
-    //     this.$message({
-    //       type: 'warning',
-    //       message: '密码不能为空!'
-    //     })
-    //   }
-    //   this.buttonText = '正在登录中......'
-    //   this.form.disabled = true
-    //   this.$http({
-    //     method: 'post',
-    //     data: this.form,
-    //     url: '/api/login'
-    //   }).then((result) => {
-    //     let flag = result.value[0].isAdmin === 0 ? false : true
-    //     let obj = {
-    //       id: result.value[0].id,
-    //       name: result.value[0].name,
-    //       isAdmin: result.value[0].isAdmin,
-    //       account: result.value[0].account,
-    //       factory: result.value[0].factory,
-    //       plant: result.value[0].plant
-    //     }
-    //     sessionStorage.setItem('user', JSON.stringify(obj))
-    //     this.updateFlag(flag)
-    //     this.buttonText = '登录成功'
-    //     this.$router.push({name: 'home'})
-    //   }).catch((error) => {
-    //     this.buttonText = '登录'
-    //     this.form.disabled = false
-    //     this.$message({
-    //       type: 'error',
-    //       message: error.msg
-    //     })
-    //   })
-    // }
   }
 }
 </script>

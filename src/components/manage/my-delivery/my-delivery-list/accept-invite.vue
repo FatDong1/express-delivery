@@ -64,12 +64,14 @@ export default {
       this.$emit('closeAcceptDialog')
     },
     confirm () {
+      let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/accept',
+        url: '/api/express/accept.do',
         data: {
-          express_id: this.myDeliveryData.express_id
+          express_id: this.myDeliveryData.express_id,
+          publisher_id: user.id
         }
       }).then((result) => {
         this.loading = false

@@ -11,7 +11,7 @@
       <i class="el-icon-menu"></i>
       <span>首页</span>
     </el-menu-item>
-    <el-menu-item index="/my-delivery?state=publish">
+    <el-menu-item index="/my-delivery?relate_me=0&pageIndex=1">
       <i class="el-icon-tickets"></i>
       <span>我的快递</span>
     </el-menu-item>
@@ -19,7 +19,7 @@
       <i class="el-icon-printer"></i>
       <span>快递帮拿</span>
     </el-menu-item>
-    <el-menu-item index="/delivery-hall">
+    <el-menu-item index="/delivery-hall?&pageIndex=1">
       <i class="el-icon-news"></i>
       <span>快递大厅</span>
     </el-menu-item>

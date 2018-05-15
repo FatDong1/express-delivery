@@ -61,7 +61,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/confirm',
+        url: '/api/express/confirm.do',
         data: {
           express_id: this.myDeliveryData.express_id
         }

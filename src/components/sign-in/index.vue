@@ -2,27 +2,31 @@
   <div class="login">
     <p class="login__title">快递帮拿服务平台</p>
     <el-form ref="signDom" :model="form" :rules="rule" label-width="70px" status-icon>
-      <el-form-item label="账号">
+      <el-form-item label="账号" prop="account">
         <el-input v-model="form.account"></el-input>
       </el-form-item>
-      <el-form-item label="姓名">
+      <el-form-item label="姓名" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱">
+      <el-form-item label="性别" prop="sex">
+        <el-radio v-model="form.sex" :label="1">男</el-radio>
+        <el-radio v-model="form.sex" :label="2">女</el-radio>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
         <el-input v-model="form.email"></el-input>
       </el-form-item>
-      <el-form-item label="手机">
+      <el-form-item label="手机" prop="phone">
         <el-input v-model="form.phone"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
-        <el-input type="password" v-model="form.pass" ></el-input>
+      <el-form-item label="密码" prop="password">
+        <el-input type="password" v-model="form.password" ></el-input>
       </el-form-item>
-      <el-form-item label="确认密码">
-        <el-input type="password" v-model="form.checkPassword"></el-input>
+      <el-form-item label="确认密码" prop="checkPass">
+        <el-input type="password" v-model="form.checkPass"></el-input>
       </el-form-item>
-      <el-form-item label="验证码">
+      <!-- <el-form-item label="验证码">
         <el-input v-model="form.check"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <row-layout :column="2">
         <el-button
@@ -59,7 +63,7 @@ export default {
     let validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.form.pass) {
+      } else if (value !== this.form.password) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
@@ -67,7 +71,22 @@ export default {
     }
     return {
       rule: {
-        pass: [
+        account: [
+          { required: true, message: '请输入使用的账号', trigger: 'blur' },
+        ],
+        name: [
+          { required: true, message: '请输入您的姓名', trigger: 'blur' },
+        ],
+        sex: [
+          { required: true, message: '请选择性别', trigger: 'blur' },
+        ],
+        email: [
+          { required: true, message: '请输入注册的邮箱', trigger: 'blur' },
+        ],
+        phone: [
+          { required: true, message: '请输入注册的手机号码', trigger: 'blur' },
+        ],
+        password: [
           { validator: validatePass, trigger: 'blur' }
         ],
         checkPass: [
@@ -76,11 +95,11 @@ export default {
       },
       form: {
         account: '',
-        pass: '',
+        password: '',
+        sex: '',
         email: '',
         phone: '',
         checkPass: '',
-        check: '',
         name: '',
         disabled: false
       }
@@ -94,53 +113,19 @@ export default {
       this.$router.push({name: 'login'})
     },
     confirm () {
-      let obj = {
-        name: "小明"
-      }
-      sessionStorage.setItem('user', JSON.stringify(obj))
-      this.$router.push({name: 'home'})      
+      // this.$router.push({name: 'home'})   
+      this.$refs['signDom'].validate((valid) => {
+        if (valid) {
+          this.$http({
+            method: 'post',
+            data: this.form,
+            url: '/api/user/add.do'
+          }).then((result) => {
+            this.$router.push({name: 'login'})   
+          })
+        }
+      })
     }
-    // signIn () {
-    //   if (!this.form.account) {
-    //     this.$message({
-    //       type: 'warning',
-    //       message: '账号不能为空!'
-    //     })
-    //   } else if (!this.form.password) {
-    //     this.$message({
-    //       type: 'warning',
-    //       message: '密码不能为空!'
-    //     })
-    //   }
-    //   this.buttonText = '正在登录中......'
-    //   this.form.disabled = true
-    //   this.$http({
-    //     method: 'post',
-    //     data: this.form,
-    //     url: '/api/login'
-    //   }).then((result) => {
-    //     let flag = result.value[0].isAdmin === 0 ? false : true
-    //     let obj = {
-    //       id: result.value[0].id,
-    //       name: result.value[0].name,
-    //       isAdmin: result.value[0].isAdmin,
-    //       account: result.value[0].account,
-    //       factory: result.value[0].factory,
-    //       plant: result.value[0].plant
-    //     }
-    //     sessionStorage.setItem('user', JSON.stringify(obj))
-    //     this.updateFlag(flag)
-    //     this.buttonText = '登录成功'
-    //     this.$router.push({name: 'home'})
-    //   }).catch((error) => {
-    //     this.buttonText = '登录'
-    //     this.form.disabled = false
-    //     this.$message({
-    //       type: 'error',
-    //       message: error.msg
-    //     })
-    //   })
-    // }
   }
 }
 </script>

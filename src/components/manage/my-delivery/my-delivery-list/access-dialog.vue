@@ -59,16 +59,18 @@ export default {
     closeDialog () {
       this.$emit('closeAssessDialog')
     },
-    confirm () {
+    confirm () {      
+      let user = JSON.parse(sessionStorage.getItem('user'))
       let result = {
-        id: this.myDeliveryData.express_id,
+        express_id: this.myDeliveryData.express_id,
         stars: this.stars,
-        assess_content: this.formData.assess_content
+        assess_content: this.formData.assess_content,
+        user_id: user.id        
       }
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/assess/add',
+        url: '/api/assess/add.do',
         data: result
       }).then((result) => {
         this.loading = false

@@ -226,7 +226,7 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/fail',
+          url: '/api/express/fail.do',
           data: {
             express_id: this.myDeliveryData.express_id
           }
@@ -251,7 +251,7 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/delete',
+          url: '/api/express/delete.do',
           data: {
             express_id: this.myDeliveryData.express_id
           }
@@ -277,7 +277,7 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/inviteFail',
+          url: '/api/express/inviteReject.do',
           data: {
             express_id: this.myDeliveryData.express_id
           }

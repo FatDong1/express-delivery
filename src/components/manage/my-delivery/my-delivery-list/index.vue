@@ -161,6 +161,7 @@ export default {
       currentPage: 1,
       workUpdateTime: '',
       stage: 'publish',
+      relate_me: 0,
       stageOptions: [{
         label: '我发布的',
         value: 'publish'
@@ -244,11 +245,18 @@ export default {
       })
       return arr
     },
-    // 改变工单阶段
+    // 改变快递阶段
     changeStage (state) {
       this.updateStage(state)
+      if (state === 'publish') {
+        this.relate_me = 0
+      } else if (state === 'accept') {
+        this.relate_me = 1
+      } else if (state === 'invite') {
+        this.relate_me = 2
+      }
       let query = Object.assign({}, this.$route.query, {
-        state
+        relate_me: this.relate_me
       })
       this.$router.push({
         query
@@ -273,17 +281,17 @@ export default {
       })
     },
     fetchPageWork (obj) {
-      // let user = JSON.parse(sessionStorage.getItem('user'))
+      let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/express/list',
+        url: '/api/express/myexpresslist.do',
         params: {
-          state: obj.state,
+          relate_me : obj.relate_me,
           goods: obj.goods,
-          send_date: obj.send_date
-          // checkerId: user.id,
-          // page: page
+          send_date: obj.send_date,
+          publisher_id: user.id,
+          page: obj.page
         }
       }).then((result) => {
         this.listData = this.transformData(result)
@@ -317,6 +325,7 @@ export default {
       })
     },
     handleDel (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))
       this.$confirm('是否删除此快递订单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -324,9 +333,10 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/delete',
+          url: '/api/express/delete.do',
           data: {
-            express_id: row.express_id
+            express_id: row.express_id,
+            publisher_id: user.id
           }
         }).then((result) => {
           this.$message({
@@ -342,6 +352,7 @@ export default {
       })
     },
     handleInviteFail (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))
       this.$confirm('<p>是否放弃该快递订单邀请?</p><p>tip：30分钟内未确认则默认放弃</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -350,9 +361,10 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/inviteFail',
+          url: '/api/express/inviteReject.do',
           data: {
-            express_id: row.express_id
+            express_id: row.express_id,
+            publisher_id: user.id
           }
         }).then((result) => {
           this.$message({
@@ -368,6 +380,7 @@ export default {
       })
     },
     handleFail (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))
       this.$confirm('<p>是否放弃拿取该快递?</p><p>tip：距接单时间5分钟内可以放弃订单</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -376,9 +389,10 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/abandon',
+          url: '/api/express/abandon.do',
           data: {
-            express_id: row.express_id
+            express_id: row.express_id,
+            publisher_id: user.id
           }
         }).then((result) => {
           this.$message({
@@ -400,7 +414,7 @@ export default {
         page: current.query.pageIndex,
         goods: current.query.searchFilter,
         send_date: current.query.send_date,
-        state: current.query.state
+        relate_me: current.query.relate_me
       }
       this.fetchPageWork(obj)      
     }
@@ -408,7 +422,7 @@ export default {
   created () {
     this.fetchPageWork({
       page: 1,
-      state: 'publish'
+      relate_me: 0
     })
   }
 }

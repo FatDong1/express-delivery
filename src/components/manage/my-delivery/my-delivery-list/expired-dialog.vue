@@ -61,9 +61,9 @@ export default {
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/fail',
+        url: '/api/express/fail.do',
         data: {
-          express_id: this.myDeliveryData.express_id
+          express_id: this.myDeliveryData.express_id         
         }
       }).then((result) => {
         this.loading = false

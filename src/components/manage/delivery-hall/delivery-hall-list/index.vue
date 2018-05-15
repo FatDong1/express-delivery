@@ -171,6 +171,14 @@ export default {
           element.stateStr = '发布者确认完成'
         } else if (element.state === 6) {
           element.stateStr = '订单截至时间前未被接单'
+        } else if (element.state === 7) {
+          element.stateStr = '评价完成'
+        } else if (element.state === 8) {
+          element.stateStr = '快递任务已放弃'
+        } else if (element.state === 9) {
+          element.stateStr = '已邀请寄送人'
+        } else if (element.state === 10) {
+          element.stateStr = '已指定邀请寄送人'
         }
         return element
       })
@@ -181,7 +189,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/express/list',
+        url: '/api/express/expresshalllist.do',
         params: {
           goods: obj.goods,
           send_date: obj.send_date,
@@ -204,21 +212,32 @@ export default {
       this.showDialog = false
     },
     handleAccept (row) {
-      this.$alert('为保证快递安全，需缴纳200元保证金，才可以成为接单用户', '没有权限', {
-        confirmButtonText: '前往缴纳',
-        callback: action => {
-          if (action === 'confirm') {
-            this.$router.push({
-              name: 'account',
-              query: {
-                state: 'upgrade'
-              }
-            })
-          }
+      this.loading = true
+      this.$http({
+        method: 'post',
+        url: '/api/express/accept.do',
+        data: {
+          express_id: row.express_id,
         }
+      }).then((result) => {
+        this.fetchPageWork({
+          page: 1,
+        })
+        this.loading = false
       })
-      // this.updateDeliveryHallData(row)
-      // this.showDialog = true
+      // this.$alert('为保证快递安全，需缴纳200元保证金，才可以成为接单用户', '没有权限', {
+      //   confirmButtonText: '前往缴纳',
+      //   callback: action => {
+      //     if (action === 'confirm') {
+      //       this.$router.push({
+      //         name: 'account',
+      //         query: {
+      //           state: 'upgrade'
+      //         }
+      //       })
+      //     }
+      //   }
+      // })
     }
   },
   watch: {
