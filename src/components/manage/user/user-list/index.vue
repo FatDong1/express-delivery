@@ -187,9 +187,9 @@ export default {
     }
   },
   created () {
-    this.fetchPageUser({
-      page: 1
-    })
+    // this.fetchPageUser({
+    //   page: 1
+    // })
   }
 }
 </script>

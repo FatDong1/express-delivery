@@ -284,15 +284,15 @@ export default {
       let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/express/myexpresslist.do',
-        params: JSON.stringify({
+        data: {
           relate_me : obj.relate_me,
           goods: obj.goods,
           send_date: obj.send_date,
           publisher_id: user.user_id,
           page: obj.page
-        })
+        }
       }).then((result) => {
         this.listData = this.transformData(result)
         this.loading = false

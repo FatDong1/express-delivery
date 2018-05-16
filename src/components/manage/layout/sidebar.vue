@@ -35,7 +35,7 @@
       <i class="el-icon-date"></i>
       <span>快递管理</span>
     </el-menu-item>
-    <el-menu-item index="/user" v-if="isAdmin">
+    <el-menu-item index="/user">
       <i class="el-icon-message"></i>
       <span>用户管理</span>
     </el-menu-item>

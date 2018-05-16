@@ -49,9 +49,17 @@
         <el-table-column prop="express_company" label="快递公司"></el-table-column>
         <el-table-column prop="send_address" label="寄送地址"></el-table-column>
         <el-table-column prop="get_address" label="取件地址"></el-table-column>
-        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.send_date | formateDate }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
-        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="end_date" label="订单截至时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.end_date | formateDate }}</span>
+          </template>
+        </el-table-column>  
         <el-table-column prop="publisher" label="发布者"></el-table-column>  
         <el-table-column
           label="操作"
@@ -188,9 +196,9 @@ export default {
       // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/express/expresshalllist.do',
-        params: {
+        data: {
           goods: obj.goods,
           send_date: obj.send_date,
           price_min: obj.price_min,
