@@ -286,13 +286,13 @@ export default {
       this.$http({
         method: 'get',
         url: '/api/express/myexpresslist.do',
-        params: {
+        params: JSON.stringify({
           relate_me : obj.relate_me,
           goods: obj.goods,
           send_date: obj.send_date,
-          publisher_id: user.id,
+          publisher_id: user.user_id,
           page: obj.page
-        }
+        })
       }).then((result) => {
         this.listData = this.transformData(result)
         this.loading = false

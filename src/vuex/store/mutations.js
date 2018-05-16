@@ -12,5 +12,13 @@ export default {
   },
   updateCompanyData (state, payload) {
     state.companyData = payload
+  },
+  updateUserData (state, payload) {
+    state.userData = payload
+  },
+  updatePartUser (state, payload) {
+    state.userData.email = payload.email
+    state.userData.phone = payload.phone
+    state.userData.introduce = payload.introduce
   }
 }

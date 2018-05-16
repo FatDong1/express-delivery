@@ -145,7 +145,7 @@ export default {
       this.loading = true
       this.$http({
         method: 'get',
-        url: '/api/user/list',
+        url: '/api/user/list.do',
         params: {
           name: obj.name,
           sex: obj.sex,

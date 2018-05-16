@@ -31,11 +31,11 @@
       <i class="el-icon-sold-out"></i>
       <span>账户管理</span>
     </el-menu-item>
-    <el-menu-item index="/express">
+    <el-menu-item index="/express" v-if="isAdmin">
       <i class="el-icon-date"></i>
       <span>快递管理</span>
     </el-menu-item>
-    <el-menu-item index="/user">
+    <el-menu-item index="/user" v-if="isAdmin">
       <i class="el-icon-message"></i>
       <span>用户管理</span>
     </el-menu-item>
@@ -47,7 +47,8 @@
     data () {
       return {
         router: true,
-        sidebarSelectItem: '/home'
+        sidebarSelectItem: '/home',
+        isAdmin: JSON.parse(sessionStorage.getItem('user')).role === 'admin'
       }
     },
     methods: {

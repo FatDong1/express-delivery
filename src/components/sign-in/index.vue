@@ -118,10 +118,15 @@ export default {
         if (valid) {
           this.$http({
             method: 'post',
-            data: this.form,
+            data: this.form,  
             url: '/api/user/add.do'
           }).then((result) => {
             this.$router.push({name: 'login'})   
+          }).catch((err) => {
+            this.$message({
+              type: error,
+              message: err.msg
+            })
           })
         }
       })

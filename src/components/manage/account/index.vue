@@ -17,7 +17,7 @@
         <span>{{accountForm.account}}</span>
       </el-form-item>
       <el-form-item label="性别" prop="sex">
-        <span>{{accountForm.sex}}</span>
+        <span>{{accountForm.sex === 1 ? '男' : '女'}}</span>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <span>{{accountForm.email}}</span>
@@ -26,16 +26,16 @@
         <span>{{accountForm.phone}}</span>
       </el-form-item>
       <el-form-item label="接单次数" prop="order_times">
-        <span>{{accountForm.order_times}}</span>
+        <span>{{accountForm.order_times + '次'}}</span>
       </el-form-item>
       <el-form-item label="成单次数" prop="finish_times">
-        <span>{{accountForm.finish_times}}</span>
+        <span>{{accountForm.finish_times + '次'}}</span>
       </el-form-item>
       <el-form-item label="账户余额" prop="money">
-        <span>{{accountForm.money}}</span>
+        <span>{{accountForm.money + '元'}}</span>
       </el-form-item>
       <el-form-item label="个性签名" prop="special">
-        <span>{{accountForm.special}}</span>
+        <span>{{accountForm.introduce}}</span>
       </el-form-item>
     </el-form>
     <el-dialog title="修改密码" :visible.sync="dialogPassVisible">
@@ -54,7 +54,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogPassVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogPassVisible = false">确 定</el-button>
+        <el-button type="primary" @click="updatePass">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog 
@@ -80,7 +80,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="confirmVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmVisible = false">确 定</el-button>
+        <el-button type="primary" @click="upgradeUser">确 定</el-button>
       </div>
     </el-dialog>
     <info-dialog
@@ -94,6 +94,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import InfoDialog from './info-dialog.vue'
 import MoneyDialog from './money-dialog.vue'
 export default {
@@ -145,20 +146,11 @@ export default {
         pass: '',
         checkPass: ''
       },
-      accountForm: {
-        name: '小明',
-        pass: '',
-        sex: '男',
-        order_times: 0,
-        finish_times: 0,
-        special: 'special',
-        email: '562097257@qq.com',
-        phone: 15602231822,
-        checkPass: '',
-        account: 'xiaoming',
-        money: '100元'
-      },
+      accountForm: JSON.parse(sessionStorage.getItem('user'))
     }
+  },
+  computed: {
+
   },
   methods: {
     postConfirmMoney () {
@@ -171,17 +163,58 @@ export default {
       }
       this.dialogPassVisible = true
     },
-    closeMoneyDialog () {
+    closeMoneyDialog (money) {
       this.moneyVisible = false
+      if (money) {
+        this.accountForm.money = money
+      }
     },
-    closeInfoDialog () {
+    closeInfoDialog (data) {
       this.infoVisible = false
+      if (data) {
+        this.accountForm.email = data.email
+        this.accountForm.phone = data.phone
+        this.accountForm.introduce = data.introduce  
+      }    
     },
     editInfo () {
       this.infoVisible = true
     },
     postMoney () {
       this.moneyVisible = true
+    },
+    upgradeUser () {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
+      this.$http({
+        method: 'post',
+        data: {
+          user_id: user.user_id
+        },
+        url: '/api/user/upgrade.do'
+      }).then((result) => {
+        this.confirmVisible = false
+        this.$message({
+          type: 'success',
+          message: '缴纳成功，已升级为接单用户！'
+        })
+      })
+    },
+    updatePass () {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
+      this.$http({
+        method: 'post',
+        data: {
+          user_id: user.user_id,
+          password: this.passForm.pass
+        },
+        url: '/api/user/updatePass.do'
+      }).then((result) => {
+        this.dialogPassVisible = false
+        this.$message({
+          type: 'success',
+          message: '密码修改成功'
+        })
+      })
     }
   },
   created () {

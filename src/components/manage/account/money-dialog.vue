@@ -6,6 +6,7 @@
     <el-form 
       v-model="moneyData" 
       label-width="100px"
+      v-loading="loading"
       label-suffix="：">
       <el-form-item label="充值金额">
         <el-select v-model="moneyData.money" placeholder="请选择">
@@ -35,6 +36,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       moneyData: {
         money: ''
       },
@@ -58,10 +60,21 @@ export default {
       this.$emit('closeMoneyDialog')
     },
     confirm () {
-      this.$emit('closeMoneyDialog')
-      this.$message({
-        type: 'success',
-        message: '充值成功'
+      let user = JSON.parse(sessionStorage.getItem('user'))      
+      this.loading = true
+      this.$http({
+        method: 'post',
+        data: {
+          user_id: user.user_id, 
+          money: this.moneyData.money
+        },
+        url: '/api/user/recharge.do'
+      }).then((result) => {
+        this.$emit('closeMoneyDialog', this.moneyData.money)
+        this.$message({
+          type: 'success',
+          message: '充值成功'
+        })
       })
     }
   }

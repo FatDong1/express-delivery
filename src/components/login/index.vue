@@ -44,40 +44,40 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'updateFlag'
+      'updateFlag',
+      'updateUserData'
     ]),
     logIn () {
-        let obj = {
-          name: "管理员"
-        }
-        sessionStorage.setItem('user', JSON.stringify(obj))
+      if (!this.form.account) {
+        this.$message({
+          type: 'warning',
+          message: '账号不能为空!'
+        })
+        return
+      } else if (!this.form.password) {
+        this.$message({
+          type: 'warning',
+          message: '密码不能为空!'
+        })
+        return
+      }
+      this.loading = true
+      this.$http({
+        method: 'post',
+        data: this.form,
+        url: '/api/user/login.do'
+      }).then((result) => {
+        this.loading = false
+        sessionStorage.setItem('user', JSON.stringify(result))
+        this.updateUserData(result)
         this.$router.push({name: 'home'})
-      // if (!this.form.account) {
-      //   this.$message({
-      //     type: 'warning',
-      //     message: '账号不能为空!'
-      //   })
-      //   return
-      // } else if (!this.form.password) {
-      //   this.$message({
-      //     type: 'warning',
-      //     message: '密码不能为空!'
-      //   })
-      //   return
-      // }
-      // this.loading = true
-      // this.$http({
-      //   method: 'post',
-      //   data: this.form,
-      //   url: '/api/user/login.do'
-      // }).then((result) => {
-      //   this.loading = false
-      //   let obj = {
-      //     name: "小明"
-      //   }
-      //   sessionStorage.setItem('user', JSON.stringify(obj))
-      //   this.$router.push({name: 'home'})
-      // })
+      }).catch((err) => {
+        this.loading = false        
+        this.$message({
+          type: 'error',
+          message: err.msg
+        })
+      })
     },
     signIn () {
       this.$router.push({name: 'sign-in'})

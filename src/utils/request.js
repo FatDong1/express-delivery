@@ -52,11 +52,11 @@ function httpRequest (request) {
     axios.request(formatRequest(request))
       .then(function (response) {
         if (response.status === 200) {
-          if (response.data.code === 0) {
+          if (response.data.code === 1) {
             // 后端请求发送成功
             resolve(response.data.data)
-          } else if (response.data.code === -1) {
-            reject(response.data.data)
+          } else if (response.data.code !== 1) {
+            reject(response.data)
           }
         } else {
           // window.alert('response status error: ', response.status)

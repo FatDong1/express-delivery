@@ -6,4 +6,5 @@ export default {
   loading: false,
   isAdmin: false,
   companyData: {},
+  userData: {}
 }

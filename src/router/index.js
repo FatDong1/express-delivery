@@ -153,6 +153,12 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   let code = sessionStorage.getItem('user') || false
+  // let isAdmin = JSON.parse(sessionStorage.getItem('user')).role === 'admin'
+  // console.log(to)
+  // if (!isAdmin && (/^\/express/.test(to.path) || /^\/user/.test(to.path))) {
+  //   alert('没有权限')
+  //   next({name: from.name})
+  // } else 
   if (code && to.name === 'login') {
     next({name: 'home'})
   } else if (!code && to.name === 'login') {
