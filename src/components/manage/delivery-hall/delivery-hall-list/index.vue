@@ -226,7 +226,7 @@ export default {
           url: '/api/express/accept.do',
           data: {
             express_id: row.express_id,
-            publisher_id: user.user_id
+            sender_id: user.user_id
           }
         }).then((result) => {
           this.fetchPageWork({

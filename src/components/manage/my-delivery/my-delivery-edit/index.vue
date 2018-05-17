@@ -147,8 +147,18 @@ export default {
     },
     updateExpress () {
       let user = JSON.parse(sessionStorage.getItem('user'))            
-      let result = Object.assign({}, this.deliveryData)
+      let result = {}
       result['publisher_id'] = user.user_id
+      result['express_id'] = this.myDeliveryData.express_id     
+      result['goods'] = this.deliveryData.goods
+      result['price'] = this.deliveryData.price
+      result['weight_level'] = this.deliveryData.weight_level
+      result['express_company'] = this.deliveryData.express_company
+      result['send_date'] = this.deliveryData.send_date
+      result['end_date'] = this.deliveryData.end_date
+      result['send_address'] = this.deliveryData.send_address
+      result['get_address'] = this.deliveryData.get_address
+      result['express_remark'] = this.deliveryData.express_remark
       this.loading = true
       this.$http({
         method: 'post',
