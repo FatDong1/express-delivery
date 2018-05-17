@@ -87,7 +87,7 @@ export default {
         value: 1,
         label: '男'
       }, {
-        value: 2,
+        value: 0,
         label: '女'
       }],
       listData: []
@@ -128,12 +128,12 @@ export default {
       // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
-        url: '/api/user/list',
-        params: {
+        method: 'post',
+        url: '/api/user/list.do',
+        data: {
           name: obj.name,
           sex: obj.sex,
-          // page: obj.page,
+          page: obj.page,
           point_min: obj.point_min,
           point_max: obj.point_max
         }

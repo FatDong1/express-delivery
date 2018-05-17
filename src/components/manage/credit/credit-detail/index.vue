@@ -79,7 +79,7 @@
           {{ creditData.introduce }}
         </info-detail-item>
       </row-layout>
-      <row-layout :column="1" v-if="creditData.all_assess.length !== 0">
+      <row-layout :column="1" v-if="creditData.all_assess && creditData.all_assess.length !== 0">
         <info-detail-item :showLabel="false" style="justify-content: center">
           用户评价
         </info-detail-item>

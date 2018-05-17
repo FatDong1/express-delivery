@@ -126,9 +126,9 @@ export default {
       // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/express/expressmaglist.do',
-        params: {
+        data: {
           page: obj.page,
           goods: obj.goods,
           send_date: obj.send_date,

@@ -240,6 +240,14 @@ export default {
           element.stateStr = '待评价'
         } else if (element.state === 6) {
           element.stateStr = '订单截至时间前未被接单'
+        } else if (element.state === 7) {
+          element.stateStr = '发布者评价完成'          
+        } else if (element.state === 8) {
+          element.stateStr = '快递任务已放弃'          
+        } else if (element.state === 9) {
+          element.stateStr = '已邀请寄送人'          
+        } else if (element.state === 10) {
+          element.stateStr = '已邀请指定寄送人'          
         }
         return element
       })
@@ -284,15 +292,15 @@ export default {
       let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/express/myexpresslist.do',
-        params: JSON.stringify({
+        data: {
           relate_me : obj.relate_me,
           goods: obj.goods,
           send_date: obj.send_date,
           publisher_id: user.user_id,
           page: obj.page
-        })
+        }
       }).then((result) => {
         this.listData = this.transformData(result)
         this.loading = false

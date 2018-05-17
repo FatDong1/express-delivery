@@ -113,18 +113,25 @@ export default {
       this.$router.push({name: 'login'})
     },
     confirm () {
-      // this.$router.push({name: 'home'})   
+      let result = {
+        account: this.form.account,
+        password: this.form.password,
+        sex: this.form.sex,
+        email: this.form.email,
+        phone: this.form.phone,
+        name: this.form.name,
+      }
       this.$refs['signDom'].validate((valid) => {
         if (valid) {
           this.$http({
             method: 'post',
-            data: this.form,  
+            data: result,  
             url: '/api/user/add.do'
           }).then((result) => {
             this.$router.push({name: 'login'})   
           }).catch((err) => {
             this.$message({
-              type: error,
+              type: 'error',
               message: err.msg
             })
           })

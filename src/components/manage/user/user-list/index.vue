@@ -43,17 +43,22 @@
         <el-table-column prop="finish_times" label="成单次数"></el-table-column>
         <el-table-column label="成单率">
           <template slot-scope="scope">
-            <span>{{ ((scope.row.order_times / scope.row.finish_times).toFixed(2) - 0) * 100 + '%' }}</span>
+            <span>{{ scope.row.finish_times ? ((scope.row.order_times / scope.row.finish_times).toFixed(2) - 0) * 100 + '%' : '0%' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="credit" label="信誉分数"></el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">
+            <span>{{ scope.row.stateStr  }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作"
           width="150">
           <template slot-scope="scope">
             <el-button @click="handleView(scope.row, scope.$index)" type="text" size="small">查看</el-button>
-            <el-button @click="handleOut(scope.row, scope.$index)" type="text" size="small">注销</el-button>
-            <el-button @click="handleStop(scope.row, scope.$index)" type="text" size="small">封停</el-button>
+            <el-button v-if="scope.row.stage === 1" @click="handleOut(scope.row, scope.$index)" type="text" size="small">注销</el-button>
+            <el-button v-if="scope.row.stage === 1" @click="handleStop(scope.row, scope.$index)" type="text" size="small">封停</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -69,8 +74,8 @@
         @current-change="changePageIndex">
       </el-pagination>
     </view-content-float> 
-    <out-dialog :dialogOutVisible="dialogOutVisible" @closeOutDialog="closeOutDialog"></out-dialog>
-    <stop-dialog :dialogStopVisible="dialogStopVisible" @closeStopDialog="closeStopDialog"></stop-dialog>
+    <out-dialog :dialogOutVisible="dialogOutVisible" :userId="editIndex" @closeOutDialog="closeOutDialog"></out-dialog>
+    <stop-dialog :dialogStopVisible="dialogStopVisible" :userId="editIndex" @closeStopDialog="closeStopDialog"></stop-dialog>
   </view-container>
 </template>
 
@@ -89,6 +94,7 @@ export default {
       dialogOutVisible: false,
       dialogStopVisible: false,
       currentPage: 1,
+      editIndex: 0,
       sex: '',
       minPoint: '',
       maxPoint: '',
@@ -97,7 +103,7 @@ export default {
         value: 1,
         label: '男'
       }, {
-        value: 2,
+        value: 0,
         label: '女'
       }],
       listData: []
@@ -107,11 +113,36 @@ export default {
     ...mapMutations('user-data', [
       'updateUserData'
     ]),
-    closeStopDialog () {
-      this.dialogStopVisible = false
+    transformData (data) {
+      let arr = data.concat([])
+      arr.forEach((data, index) => {
+        let state = data.state
+        let start_date = data.start_date
+        let now = Date.now()
+        if (state === 0) {
+          arr[index]['stateStr'] = '已注销'
+          arr[index]['stage'] = 0
+        } else if (state === 1 && now < start_date) {
+          arr[index]['stateStr'] = '已封停'
+          arr[index]['stage'] = 2        
+        } else {
+          arr[index]['stateStr'] = '正常使用'
+          arr[index]['stage'] = 1        
+        }
+      })
+      return arr
     },
-    closeOutDialog () {
+    closeStopDialog (flag) {
+      this.dialogStopVisible = false
+      if (flag) {
+        this.fetchPageUser({ page: 1 })
+      }
+    },
+    closeOutDialog (flag) {
       this.dialogOutVisible = false
+      if (flag) {
+        this.fetchPageUser({ page: 1 })
+      }
     },
     changeStage (sex) {
       let query = Object.assign({}, this.$route.query, {
@@ -144,9 +175,9 @@ export default {
       // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/user/list.do',
-        params: {
+        data: {
           name: obj.name,
           sex: obj.sex,
           // page: obj.page,
@@ -154,7 +185,7 @@ export default {
           point_max: obj.point_max
         }
       }).then((result) => {
-        this.listData = result
+        this.listData = this.transformData(result)
         this.loading = false
       })
     },
@@ -167,10 +198,12 @@ export default {
         name: 'user-view'
       })
     },
-    handleOut () {
+    handleOut (row) {
+      this.editIndex = row.user_id
       this.dialogOutVisible = true
     },
-    handleStop () {
+    handleStop (row) {
+      this.editIndex = row.user_id      
       this.dialogStopVisible = true
     }
   },

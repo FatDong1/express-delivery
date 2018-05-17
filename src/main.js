@@ -31,6 +31,29 @@ Vue.component('check-header', CheckHeader)
 
 Vue.prototype.$http = httpRequest
 
+Vue.filter('formateDate', function (time) {
+  let date = new Date(time)
+  let year = date.getFullYear()
+  let month = date.getMonth() + 1
+  let day = date.getDate()
+  return year + '年' + month +'月' + day + '日'
+})
+
+Vue.filter('transformState', function (obj) {
+  let state = obj.state
+  let start_date = obj.start_date
+  let now = Date.now()
+  let result
+  if (state === 0) {
+    result = '已注销'
+  } else if (state === 1 && now < start_date) {
+    result = '已封停'
+  } else {
+    result = '正常使用'
+  }
+  return result
+})
+
 new Vue({
   el: '#app',
   router,

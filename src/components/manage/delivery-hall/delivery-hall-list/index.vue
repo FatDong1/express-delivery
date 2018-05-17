@@ -188,9 +188,9 @@ export default {
       // let user = JSON.parse(sessionStorage.getItem('user'))
       this.loading = true
       this.$http({
-        method: 'get',
+        method: 'post',
         url: '/api/express/expresshalllist.do',
-        params: {
+        data: {
           goods: obj.goods,
           send_date: obj.send_date,
           price_min: obj.price_min,

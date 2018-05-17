@@ -17,14 +17,30 @@ export default {
   props: {
     dialogStopVisible: {
       type: Boolean
+    },
+    userId: {
+      type: Number
     }
   },
   methods: {
     closeDialog () {
-      this.$emit('closeStopDialog')
+      this.$emit('closeStopDialog', 0)
     },
     confirm () {
-      
+      this.$http({
+        method: 'post',
+        url: '/api/user/stopUse.do',
+        data: {
+          user_id: this.userId
+        }
+      }).then((result) => {
+        this.disabled = true
+        this.$emit('closeStopDialog', 1)
+        this.$message({
+          type: 'success',
+          message: '封停用户成功'
+        })
+      })
     }
   }
 }

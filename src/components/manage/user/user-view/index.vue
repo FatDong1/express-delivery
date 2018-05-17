@@ -18,7 +18,7 @@
         <info-detail-item
           slot="left"
           :label-width="labelWidth"
-          label="排行">
+          label="编号">
           {{ userData.rank }}
         </info-detail-item>
         <info-detail-item
@@ -91,7 +91,7 @@
           {{ userData.introduce }}
         </info-detail-item>
       </row-layout>
-      <row-layout :column="1" v-if="userData.all_assess.length !== 0">
+      <row-layout :column="1" v-if="userData.all_assess && userData.all_assess.length !== 0">
         <info-detail-item :showLabel="false" style="justify-content: center">
           用户评价
         </info-detail-item>
