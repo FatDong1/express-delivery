@@ -22,7 +22,6 @@
         @change="changeWorkUpdateTime"
         type="date">
       </el-date-picker>
-      </el-date-picker>  
     </view-content>
     <!--列表  -->
     <view-content>

@@ -71,6 +71,9 @@ export default {
         url: '/api/user/recharge.do'
       }).then((result) => {
         this.$emit('closeMoneyDialog', this.moneyData.money)
+        let obj = Object.assign({}, user)
+        obj['money'] = this.moneyData.money
+        sessionStorage.setItem('user', JSON.stringify(obj))
         this.$message({
           type: 'success',
           message: '充值成功'
