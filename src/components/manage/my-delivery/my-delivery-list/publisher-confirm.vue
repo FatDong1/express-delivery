@@ -67,7 +67,7 @@ export default {
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closePublisherDialog')
+        this.$emit('closePublisherDialog', 1)
         this.$message({
           type: 'success',
           message: '确认成功'

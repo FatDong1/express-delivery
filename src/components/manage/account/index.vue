@@ -193,6 +193,9 @@ export default {
         url: '/api/user/upgrade.do'
       }).then((result) => {
         this.confirmVisible = false
+        let obj = Object.assign({}, user)
+        obj['role_id'] = 3
+        sessionStorage.setItem('user', JSON.stringify(obj))
         this.$message({
           type: 'success',
           message: '缴纳成功，已升级为接单用户！'

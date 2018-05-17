@@ -14,14 +14,13 @@
           :label="item.label"
           :value="item.value"></el-option>
       </el-select>  
-       <el-date-picker
-        clearable
-        placeholder="选择寄送的日期"
-        value-format="yyyy-MM-dd"
+      <el-date-picker
         v-model="workUpdateTime"
+        type="datetime"
         @change="changeWorkUpdateTime"
-        type="date">
-      </el-date-picker>  
+        default-time="12:00:00"
+        placeholder="选择寄送日期和时间">
+      </el-date-picker>
     </view-content>
     <!--列表  -->
     <view-content>
@@ -35,14 +34,21 @@
         <el-table-column prop="express_company" label="快递公司"></el-table-column>
         <el-table-column prop="send_address" label="寄送地址"></el-table-column>
         <el-table-column prop="get_address" label="取件地址"></el-table-column>
-        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.send_date | formateDate }}</span>
+          </template>
+        </el-table-column>
          <el-table-column label="寄送人" v-if="stage === 'publish'">
           <template slot-scope="scope">
             <span>{{ scope.row.sender ? scope.row.sender : '暂无接单人'}}</span>
           </template>
         </el-table-column> 
         <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
-        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="end_date" label="订单截至时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.end_date | formateDate }}</span>
+          </template></el-table-column>  
         <el-table-column prop="stateStr" label="快递状态"></el-table-column>          
         <el-table-column
           label="操作"
@@ -65,12 +71,12 @@
               @click="inviteExpress(scope.row)"
               size="small">邀请</el-button>
             <el-button 
-              v-if="stage === 'invite' && scope.row.state === 1"
+              v-if="stage === 'invite' && scope.row.state === 9"
               type="text"
               @click="acceptInvite(scope.row)" 
               size="small">接受邀请</el-button>
             <el-button 
-              v-if="stage === 'invite' && scope.row.state === 1"
+              v-if="stage === 'invite' && scope.row.state === 9"
               type="text" 
               @click="handleInviteFail(scope.row)"
               size="small">放弃邀请</el-button>
@@ -180,49 +186,86 @@ export default {
       'updateMyDeliveryData',
       'updateStage'
     ]),
-    closeExpiredDialog () {
+    closeExpiredDialog (flag) {
       this.showExpiredDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     handleExpired (row) {
       this.updateMyDeliveryData(row)
       this.showExpiredDialog = true
     },
-    closeAcceptDialog () {
+    closeAcceptDialog (flag) {
       this.showAcceptDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     acceptInvite (row) {
       this.updateMyDeliveryData(row)
       this.showAcceptDialog = true
     },
-    closeAssessDialog () {
+    closeAssessDialog (flag) {
       this.showAssessDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     assessExpress (row) {
       this.updateMyDeliveryData(row)
       this.showAssessDialog = true
     },
-    closeInviteDialog () {
+    closeInviteDialog (flag) {
       this.showInviteDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     inviteExpress (row) {
       this.updateMyDeliveryData(row)
       this.showInviteDialog = true
     },
-    closeSenderDialog () {
+    closeSenderDialog (flag) {
       this.showSenderDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     senderConfirm (row) {
       this.updateMyDeliveryData(row)
       this.showSenderDialog = true
     },
-    closePublisherDialog () {
+    closePublisherDialog (flag) {
       this.showPublisherDialog = false
+      if (flag) {
+        this.fetchPageWork({
+          page: 1,
+          relate_me: this.$route.query.relate_me
+        })
+      }
     },
     publisherConfirm (row) {
       this.updateMyDeliveryData(row)
       this.showPublisherDialog = true
     },
-    transformData (list) {
+    transformData (list, relate_me) {
+      let flag = false
       let arr = list.map(function (element) {
         if (element.state === -1) {
           element.stateStr = '未通过审核'
@@ -249,19 +292,23 @@ export default {
         } else if (element.state === 10) {
           element.stateStr = '已邀请指定寄送人'          
         }
+        if (element.state === 1 && relate_me === '2') {
+          flag = true
+        }
         return element
       })
-      return arr
+      let result = flag ? [] : arr
+      return result
     },
     // 改变快递阶段
     changeStage (state) {
       this.updateStage(state)
       if (state === 'publish') {
-        this.relate_me = 0
+        this.relate_me = '0'
       } else if (state === 'accept') {
-        this.relate_me = 1
+        this.relate_me = '1'
       } else if (state === 'invite') {
-        this.relate_me = 2
+        this.relate_me = '2'
       }
       let query = Object.assign({}, this.$route.query, {
         relate_me: this.relate_me
@@ -273,7 +320,7 @@ export default {
     // 改变时间
     changeWorkUpdateTime (send_date) {
       let query = Object.assign({}, this.$route.query, {
-        send_date
+        send_date: new Date(send_date).getTime()
       })
       this.$router.push({
         query
@@ -302,7 +349,7 @@ export default {
           page: obj.page
         }
       }).then((result) => {
-        this.listData = this.transformData(result)
+        this.listData = this.transformData(result, this.$route.query.relate_me)
         this.loading = false
       })
     },
@@ -344,9 +391,13 @@ export default {
           url: '/api/express/delete.do',
           data: {
             express_id: row.express_id,
-            publisher_id: user.id
+            publisher_id: user.user_id
           }
         }).then((result) => {
+          this.fetchPageWork({
+            page: 1,
+            relate_me: this.$route.query.relate_me
+          })
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -369,12 +420,17 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/inviteReject.do',
+          url: '/api/express/pass.do',
           data: {
+            state: 1,
             express_id: row.express_id,
-            publisher_id: user.id
+            publisher_id: user.user_id
           }
         }).then((result) => {
+          this.fetchPageWork({
+            page: 1,
+            relate_me: this.$route.query.relate_me
+          })
           this.$message({
             type: 'success',
             message: '放弃订单邀请成功!'
@@ -400,9 +456,13 @@ export default {
           url: '/api/express/abandon.do',
           data: {
             express_id: row.express_id,
-            publisher_id: user.id
+            publisher_id: user.user_id
           }
         }).then((result) => {
+          this.fetchPageWork({
+            page: 1,
+            relate_me: this.$route.query.relate_me
+          })
           this.$message({
             type: 'success',
             message: '放弃订单成功!'

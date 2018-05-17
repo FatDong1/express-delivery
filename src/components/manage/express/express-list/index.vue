@@ -35,15 +35,22 @@
         <el-table-column prop="goods" label="快递物品"></el-table-column>
         <el-table-column label="重量水平">
           <template slot-scope="scope">
-            <span>{{ listData.weight_level === 0 ? '较轻' : listData.weight_level === 1 ? '较重' : '非常重' }}</span>
+            <span>{{ scope.row.weight_level === 0 ? '较轻' : scope.row.weight_level === 1 ? '较重' : '非常重' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="express_company" label="快递公司"></el-table-column>
         <el-table-column prop="send_address" label="寄送地址"></el-table-column>
         <el-table-column prop="get_address" label="取件地址"></el-table-column>
-        <el-table-column prop="send_date" label="寄送时间" width="150px"></el-table-column>
+        <el-table-column prop="send_date" label="寄送时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.send_date | formateDate }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="price" label="佣金(元)" width="80px"></el-table-column>
-        <el-table-column prop="end_date" label="订单截至时间" width="150px"></el-table-column>  
+        <el-table-column prop="end_date" label="订单截至时间" width="150px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.end_date | formateDate }}</span>
+          </template></el-table-column>  
         <el-table-column prop="publisher" label="发布者"></el-table-column>           
         <el-table-column
           label="操作"

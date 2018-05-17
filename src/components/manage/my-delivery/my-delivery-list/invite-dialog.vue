@@ -82,7 +82,7 @@ export default {
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closeInviteDialog')
+        this.$emit('closeInviteDialog', 1)
         this.$message({
           type: 'success',
           message: '邀请成功'
@@ -96,11 +96,11 @@ export default {
         url: '/api/express/invite.do',
         data: {
           express_id: this.myDeliveryData.express_id,
-          name: this.inviter
+          inviter: this.inviter
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closeInviteDialog')
+        this.$emit('closeInviteDialog', 1)
         this.$message({
           type: 'success',
           message: '邀请成功'

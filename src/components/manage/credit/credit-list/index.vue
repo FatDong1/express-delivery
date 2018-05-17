@@ -43,7 +43,7 @@
         <el-table-column prop="finish_times" label="成单次数"></el-table-column>
         <el-table-column label="成单率">
           <template slot-scope="scope">
-            <span>{{ ((scope.row.order_times / scope.row.finish_times).toFixed(2) - 0) * 100 + '%' }}</span>
+            <span>{{ scope.row.finish_times ? ((scope.row.order_times / scope.row.finish_times).toFixed(2) - 0) * 100 + '%' : '0%' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="credit" label="信誉分数"></el-table-column>

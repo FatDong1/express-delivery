@@ -31,7 +31,7 @@
         <span>{{ myDeliveryData.send_address }}</span>
       </el-form-item>
       <el-form-item label="预定寄送时间">
-       <span>{{ myDeliveryData.send_date }}</span>
+       <span>{{ myDeliveryData.send_date | formateDate }}</span>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -65,22 +65,38 @@ export default {
     },
     confirm () {
       let user = JSON.parse(sessionStorage.getItem('user'))
-      this.loading = true
-      this.$http({
-        method: 'post',
-        url: '/api/express/accept.do',
-        data: {
-          express_id: this.myDeliveryData.express_id,
-          publisher_id: user.id
-        }
-      }).then((result) => {
-        this.loading = false
-        this.$emit('closeAcceptDialog')
-        this.$message({
-          type: 'success',
-          message: '接受订单成功'
+      if (user.user_id === 3) {
+        this.loading = true
+        this.$http({
+          method: 'post',
+          url: '/api/express/accept.do',
+          data: {
+            express_id: this.myDeliveryData.express_id,
+            publisher_id: user.user_id
+          }
+        }).then((result) => {
+          this.loading = false
+          this.$emit('closeAcceptDialog', 1)
+          this.$message({
+            type: 'success',
+            message: '接受订单成功'
+          })
         })
-      })
+      } else {
+        this.$alert('为保证快递安全，需缴纳200元保证金，才可以成为接单用户', '没有权限', {
+          confirmButtonText: '前往缴纳',
+          callback: action => {
+            if (action === 'confirm') {
+              this.$router.push({
+                name: 'account',
+                query: {
+                  state: 'upgrade'
+                }
+              })
+            }
+          }
+        })
+      }
     }
   }
 }

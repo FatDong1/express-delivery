@@ -56,13 +56,13 @@
           slot="left"        
           :label-width="labelWidth"
           label="发布时间">
-          {{ expressData.publish_date }}
+          {{ expressData.publish_date | formateDate}}
         </info-detail-item>
         <info-detail-item
           slot="right"
           :label-width="labelWidth"
           label="取件时间">
-          {{ expressData.send_date }}
+          {{ expressData.send_date | formateDate}}
         </info-detail-item>
       </row-layout>
       <row-layout :column="column">
@@ -70,7 +70,7 @@
           slot="left"
           :label-width="labelWidth"
           label="订单截至时间">
-          {{ expressData.end_date }}
+          {{ expressData.end_date | formateDate }}
         </info-detail-item>
         <info-detail-item
           slot="right"
@@ -135,6 +135,7 @@ export default {
       'updateMyDeliveryData'
     ]),
     passWork () {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
       this.$confirm('确认审核通过此订单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -142,8 +143,9 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/pass',
+          url: '/api/express/pass.do',
           data: {
+            state: 1,
             express_id: this.expressData.express_id
           }
         }).then(() => {
@@ -165,10 +167,12 @@ export default {
     },
     confirmReject () {
       this.loading = true
+      let user = JSON.parse(sessionStorage.getItem('user'))      
       this.$http({
         method: 'post',
-        url: '/api/express/reject',
+        url: '/api/express/reject.do',
         data: {
+          state: -1,
           express_id: this.expressData.express_id,
           reject_reason: this.form.reason
         }

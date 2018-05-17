@@ -19,10 +19,10 @@
         <span>{{ myDeliveryData.get_address }}</span>
       </el-form-item>
       <el-form-item label="寄件地址">
-        <span>{{ myDeliveryData.send_address }}</span>
+        <span>{{ myDeliveryData.send_address}}</span>
       </el-form-item>
       <el-form-item label="预定寄送时间">
-       <span>{{ myDeliveryData.send_date }}</span>
+       <span>{{ myDeliveryData.send_date | formateDate }}</span>
       </el-form-item>
       <el-form-item label="提示">
        <span>{{ '举报成功后将寄送人的信誉分减一'}}</span>
@@ -67,7 +67,7 @@ export default {
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closeExpiredDialog')
+        this.$emit('closeExpiredDialog', 1)
         this.$message({
           type: 'success',
           message: '举报成功'

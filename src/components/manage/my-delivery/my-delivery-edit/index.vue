@@ -126,11 +126,14 @@ export default {
       }
     },
     addExpress () {
+      let user = JSON.parse(sessionStorage.getItem('user'))            
+      let result = Object.assign({}, this.deliveryData)
+      result['publisher_id'] = user.user_id
       this.loading = true
       this.$http({
         method: 'post',
         url: '/api/express/add.do',
-        data: this.deliveryData
+        data: result
       }).then((result) => {
         this.loading = false
         this.$message({
@@ -143,11 +146,14 @@ export default {
       })
     },
     updateExpress () {
+      let user = JSON.parse(sessionStorage.getItem('user'))            
+      let result = Object.assign({}, this.deliveryData)
+      result['publisher_id'] = user.user_id
       this.loading = true
       this.$http({
         method: 'post',
-        url: '/api/express/update.do',
-        data: this.deliveryData
+        url: '/api/express/edit.do',
+        data: result
       }).then((result) => {
         this.loading = false
         this.$message({

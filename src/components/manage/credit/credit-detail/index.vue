@@ -63,7 +63,7 @@
           slot="left"
           :label-width="labelWidth"
           label="成单率">
-          {{ ((creditData.order_times / creditData.finish_times).toFixed(2) - 0) * 100 + '%' }}
+          {{ creditData.finish_times ? ((creditData.order_times / creditData.finish_times).toFixed(2) - 0) * 100 + '%' : '0%' }}
         </info-detail-item>
         <info-detail-item
           slot="right"
@@ -79,12 +79,12 @@
           {{ creditData.introduce }}
         </info-detail-item>
       </row-layout>
-      <row-layout :column="1" v-if="creditData.all_assess && creditData.all_assess.length !== 0">
+      <row-layout :column="1" v-if="creditData.assessVoList && creditData.assessVoList.length !== 0">
         <info-detail-item :showLabel="false" style="justify-content: center">
           用户评价
         </info-detail-item>
       </row-layout>
-      <row-layout :column="column" v-for="item in creditData.all_assess">
+      <row-layout :column="column" v-for="item in creditData.assessVoList">
         <info-detail-item
           slot="left"
           :label-width="labelWidth"

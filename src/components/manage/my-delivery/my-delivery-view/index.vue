@@ -120,7 +120,7 @@
           slot="right"
           :label-width="labelWidth"
           label="寄送时间">
-          {{ myDeliveryData.send_date }}
+          {{ myDeliveryData.send_date | formateDate }}
         </info-detail-item>
       </row-layout>
       <row-layout :column="column">
@@ -142,7 +142,7 @@
           slot="left"
           :label-width="labelWidth"
           label="发布时间">
-          {{ myDeliveryData.publish_date }}
+          {{ myDeliveryData.publish_date | formateDate }}
         </info-detail-item>
         <info-detail-item
           slot="right"
@@ -218,6 +218,7 @@ export default {
       })
     },
     handleFail (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
       this.$confirm('<p>是否放弃拿取该快递?</p><p>tip：距接单时间5分钟内可以放弃订单</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -228,7 +229,8 @@ export default {
           method: 'post',
           url: '/api/express/fail.do',
           data: {
-            express_id: this.myDeliveryData.express_id
+            express_id: this.myDeliveryData.express_id,
+            publisher_id: user.user_id
           }
         }).then((result) => {
           this.$message({
@@ -244,6 +246,7 @@ export default {
       })
     },
     handleDel (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
       this.$confirm('是否删除此快递订单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -253,7 +256,8 @@ export default {
           method: 'post',
           url: '/api/express/delete.do',
           data: {
-            express_id: this.myDeliveryData.express_id
+            express_id: this.myDeliveryData.express_id,
+            publisher_id: user.user_id            
           }
         }).then((result) => {
           this.$message({
@@ -269,6 +273,7 @@ export default {
       })
     },
     handleInviteFail (row) {
+      let user = JSON.parse(sessionStorage.getItem('user'))      
       this.$confirm('<p>是否放弃拿取该快递订单邀请?</p><p>tip：30分钟内需要确认是否接受</p>', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -277,9 +282,12 @@ export default {
       }).then(() => {
         this.$http({
           method: 'post',
-          url: '/api/express/inviteReject.do',
+          url: '/api/express/pass.do',
           data: {
-            express_id: this.myDeliveryData.express_id
+            express_id: this.myDeliveryData.express_id,
+            state: 1,
+            publisher_id: user.user_id
+            
           }
         }).then((result) => {
           this.$message({

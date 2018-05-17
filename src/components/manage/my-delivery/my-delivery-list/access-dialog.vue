@@ -65,7 +65,7 @@ export default {
         express_id: this.myDeliveryData.express_id,
         stars: this.stars,
         assess_content: this.formData.assess_content,
-        user_id: user.id        
+        user_id: user.user_id        
       }
       this.loading = true
       this.$http({
@@ -74,7 +74,7 @@ export default {
         data: result
       }).then((result) => {
         this.loading = false
-        this.$emit('closeAssessDialog')
+        this.$emit('closeAssessDialog', 1)
         this.$message({
           type: 'success',
           message: '感谢您对本次服务进行评价'

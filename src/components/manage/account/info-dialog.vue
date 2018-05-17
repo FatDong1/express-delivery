@@ -50,7 +50,6 @@ export default {
         phone:  this.infoData.phone,
         checkPass: ''
       }
-      console.log(123, this.infoData)
       return obj
     }
   },

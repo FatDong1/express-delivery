@@ -75,7 +75,7 @@
           slot="left"
           :label-width="labelWidth"
           label="成单率">
-          {{ ((userData.order_times / userData.finish_times).toFixed(2) - 0) * 100 + '%' }}
+          {{ userData.finish_times ? ((userData.order_times / userData.finish_times).toFixed(2) - 0) * 100 + '%' : '0%' }}
         </info-detail-item>
         <info-detail-item
           slot="right"
@@ -91,12 +91,12 @@
           {{ userData.introduce }}
         </info-detail-item>
       </row-layout>
-      <row-layout :column="1" v-if="userData.all_assess && userData.all_assess.length !== 0">
+      <row-layout :column="1" v-if="userData.assessVoList && userData.assessVoList.length !== 0">
         <info-detail-item :showLabel="false" style="justify-content: center">
           用户评价
         </info-detail-item>
       </row-layout>
-      <row-layout :column="column" v-for="item in userData.all_assess">
+      <row-layout :column="column" v-for="item in userData.assessVoList">
         <info-detail-item
           slot="left"
           :label-width="labelWidth"
@@ -117,8 +117,8 @@
         </info-detail-item>
       </row-layout>
     </info-detail>
-    <out-dialog :dialogOutVisible="dialogOutVisible" @closeOutDialog="closeOutDialog"></out-dialog>
-    <stop-dialog :dialogStopVisible="dialogStopVisible" @closeStopDialog="closeStopDialog"></stop-dialog>
+    <out-dialog :dialogOutVisible="dialogOutVisible" :userId="userData.user_id" @closeOutDialog="closeOutDialog"></out-dialog>
+    <stop-dialog :dialogStopVisible="dialogStopVisible" :userId="userData.user_id"  @closeStopDialog="closeStopDialog"></stop-dialog>
   </view-container>
 </template>
 
@@ -139,6 +139,7 @@ export default {
       column: 2,
       labelWidth: '120px',
       loading: false,
+      userId: 0
     }
   },
   methods: {

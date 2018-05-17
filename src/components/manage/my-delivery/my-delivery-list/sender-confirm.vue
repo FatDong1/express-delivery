@@ -22,7 +22,7 @@
         <span>{{ myDeliveryData.send_address }}</span>
       </el-form-item>
       <el-form-item label="预定寄送时间">
-       <span>{{ myDeliveryData.send_date }}</span>
+       <span>{{ myDeliveryData.send_date | formateDate }}</span>
       </el-form-item>
       <el-form-item label="提示">
        <span>待发布者确认完成后将收到佣金</span>
@@ -67,7 +67,7 @@ export default {
         }
       }).then((result) => {
         this.loading = false
-        this.$emit('closeSenderDialog')
+        this.$emit('closeSenderDialog', 1)
         this.$message({
           type: 'success',
           message: '确认成功'
