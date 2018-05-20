@@ -72,7 +72,7 @@ export default {
           url: '/api/express/accept.do',
           data: {
             express_id: this.myDeliveryData.express_id,
-            publisher_id: user.user_id
+            sender_id: user.user_id
           }
         }).then((result) => {
           this.loading = false
@@ -80,6 +80,11 @@ export default {
           this.$message({
             type: 'success',
             message: '接受订单成功'
+          })
+        }).catch((err) => {
+          this.$message({
+            type: 'error',
+            message: '接受订单失败'
           })
         })
       } else {

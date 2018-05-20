@@ -232,7 +232,16 @@ export default {
           this.fetchPageWork({
             page: 1,
           })
+          this.$message({
+            type: 'success',
+            message: '接受快递订单成功'
+          })
           this.loading = false
+        }).catch((err) => {
+          this.$message({
+            type: 'error',
+            message: '接受快递订单失败'
+          })
         })
       } else {
         this.$alert('为保证快递安全，需缴纳200元保证金，才可以成为接单用户', '没有权限', {

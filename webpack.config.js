@@ -58,7 +58,7 @@ module.exports = (options = {}) => ({
     port: 8010,
     proxy: {
       '/api/': {
-        target: 'http://193.112.216.116:8080/kdbnserver',
+        target: 'http://localhost:8080/kdbnserver',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '/api'
